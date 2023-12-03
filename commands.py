@@ -19,15 +19,13 @@ async def handle_tarot_spread(bot: Bot, event: MessageEvent):
     spread_data = load_spread_data()
     cards_dict, tarot_urls = load_tarot_data()
 
-    # 随机选择一个牌阵型
     chosen_spread = random.choice(list(spread_data["formations"].keys()))
     spread_info = spread_data["formations"][chosen_spread]
     
     selected_cards = random.sample(list(cards_dict.keys()), spread_info["cards_num"])
 
-    nodes = []  # 用于存储消息节点
+    nodes = []  
 
-    # 添加牌阵名称节点
     nodes.append({
         "type": "node",
         "data": {
@@ -43,7 +41,6 @@ async def handle_tarot_spread(bot: Bot, event: MessageEvent):
         card_url = tarot_urls.get(f"tarot_{card_key}")
         representation = random.choice(spread_info["representations"])[i]
 
-        # 随机决定牌的逆位或顺位
         if random.random() < 0.5:
             position = "顺位"
             card_meaning = card['meaning']['up']
@@ -59,7 +56,6 @@ async def handle_tarot_spread(bot: Bot, event: MessageEvent):
             else:
                 card_message += "图片加载失败\n"
         
-        # 添加每张牌的节点
         nodes.append({
             "type": "node",
             "data": {
@@ -87,7 +83,6 @@ async def handle_daily_fortune(bot: Bot, event: MessageEvent):
 
     reply = f"今日塔罗牌：{card_name}\n今日运势指数：{fortune_score}\n运势解读：{fortune_description}\n"
 
-    # 添加牌的图片
     if card_url:
         base64_image = await send_image_as_base64(card_url)
         if base64_image:
@@ -103,7 +98,7 @@ async def handle_tarot_reading(bot: Bot, event: MessageEvent):
     user_input = str(event.get_message()).strip()
     specific_card_key = None
 
-    # 如果用户只输入了"ba塔罗牌解读"，则随机选择一张牌
+    # 如果只输入了"ba塔罗牌解读"，则随机选择一张牌
     if user_input == "ba塔罗牌解读":
         specific_card_key = random.choice(list(cards_dict.keys()))
 
