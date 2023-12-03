@@ -40,7 +40,6 @@ ps：运势描述的句子是我自己编写的，如果有人愿意提供一些
 然后打开 nonebot2 项目根目录下的 `pyproject.toml` 文件,在 `[tool.nonebot]` 部分的 `plugins` 项里追加写入nonebot_plugin_babattleline即可
 
 pypi注册不了所以没法发包，暂未上架 NB 商店，只能用gitclone。。。
- 
 
 
 <!--
@@ -119,8 +118,7 @@ ba占卜：以合并转发的方式发送一个牌阵进行占卜
 ba运势：随机发送一张ba塔罗牌以及对应的运势分数和描述
 
 ba塔罗牌解读：发送一张ba塔罗牌以及塔罗牌原画师的解读www
-
-
+ 
 ## 📞 制作者
 
 ### 黑纸折扇 [Perseus037] (https://github.com/Perseus037)
@@ -133,4 +131,4 @@ QQ：1209228678
 
 ### CedarLullaby（https://space.bilibili.com/2910913）提供的翻译
 
-### 饼干 [student_2333] (https://github.com/lgc2333) 对于我学习编写插件和配置bot过程中的无私帮助
+### KafCoppelia （https://github.com/KafCoppelia）的nonebot_plugin_tarot（~~直接开抄~~）
