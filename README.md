@@ -129,6 +129,6 @@ QQ：1209228678
 
 ### shi0n_krbn（twitter@shi0n_krbn)画师妈妈的超好看ba塔罗牌和解读
 
-### CedarLullaby（https://space.bilibili.com/2910913）提供的翻译
+### CedarLullaby（https://space.bilibili.com/2910913) 提供的翻译
 
-### KafCoppelia （https://github.com/KafCoppelia）的nonebot_plugin_tarot（~~直接开抄~~）
+### KafCoppelia （https://github.com/KafCoppelia)的nonebot_plugin_tarot(~~直接开抄~~)
