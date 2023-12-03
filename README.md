@@ -1,1 +1,132 @@
-# nonebot_plugin_batarot
+<div align="center">
+  <img src="https://github.com/Perseus037/data/raw/master/juangou.jpg" alt="小心卷狗" width="280" height="280">
+
+_✨一个可以进行测运势，占卜的碧蓝档案塔罗牌nonebot2插件✨_
+
+<img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="python">
+<a href="https://pdm.fming.dev">
+  <img src="https://img.shields.io/badge/pdm-managed-blueviolet" alt="pdm-managed">
+</a>
+<!-- <a href="https://wakatime.com/badge/user/b61b0f9a-f40b-4c82-bc51-0a75c67bfccf/project/f4778875-45a4-4688-8e1b-b8c844440abb">
+  <img src="https://wakatime.com/badge/user/b61b0f9a-f40b-4c82-bc51-0a75c67bfccf/project/f4778875-45a4-4688-8e1b-b8c844440abb.svg" alt="wakatime">
+</a> -->
+
+<br />
+
+<a href="./LICENSE">
+  <img src="https://img.shields.io/github/license/lgc-NB2Dev/nonebot-plugin-uma.svg" alt="license">
+</a>
+<a href="https://pypi.python.org/pypi/nonebot-plugin-longtu">
+  <img src="https://img.shields.io/pypi/v/nonebot-plugin-uma.svg" alt="pypi">
+</a>
+<a href="https://pypi.python.org/pypi/nonebot-plugin-longtu">
+  <img src="https://img.shields.io/pypi/dm/nonebot-plugin-uma" alt="pypi download">
+</a>
+
+</div>
+
+<div align="left">
+
+## 📖 介绍
+一个可以进行测运势，占卜的碧蓝档案塔罗牌nonebot2插件
+目前共有4个功能：ba塔罗牌，ba运势，ba占卜和ba塔罗牌解读
+自己推的国内仓库，无需担心从github下载图片的一次次报错和网络加载失败问题
+
+ps：运势描述的句子是我自己编写的，如果有人愿意提供一些更优美的运势的描述的话，真的感激不尽。
+
+## 💿 安装
+
+建议直接将这个插件扔进nonebot2\.venv\Lib\site-packages根目录中，
+然后打开 nonebot2 项目根目录下的 `pyproject.toml` 文件,在 `[tool.nonebot]` 部分的 `plugins` 项里追加写入nonebot_plugin_babattleline即可
+
+插件处于开发阶段中（~~写的一坨屎山实在是没脸上架~~）暂未上架 NB 商店，
+ 
+
+
+<!--
+<details open>
+<summary>[推荐] 使用 nb-cli 安装</summary>
+在 nonebot2 项目的根目录下打开命令行, 输入以下指令即可安装
+
+```bash
+nb plugin install nonebot-plugin-babattleline
+```
+-->
+
+</details>
+
+<details open>
+<summary>使用包管理器安装</summary>
+在 nonebot2 项目的插件目录下, 打开命令行, 根据你使用的包管理器, 输入相应的安装命令
+
+<details open>
+<summary>pip</summary>
+
+```bash
+pip install nonebot-plugin-babattleline
+```
+
+</details>
+<details>
+<summary>pdm</summary>
+
+```bash
+pdm add nonebot-plugin-babattleline
+```
+
+</details>
+<details>
+<summary>poetry</summary>
+
+```bash
+poetry add nonebot-plugin-babattleline
+```
+
+</details>
+<details>
+<summary>conda</summary>
+
+```bash
+conda install nonebot-plugin-babattleline
+```
+
+</details>
+
+打开 nonebot2 项目根目录下的 `pyproject.toml` 文件, 在 `[tool.nonebot]` 部分的 `plugins` 项里追加写入
+
+```toml
+[tool.nonebot]
+plugins = [
+    # ...
+    "nonebot_plugin_babattleline"
+]
+```
+
+</details>
+
+## ⚙️ 配置
+
+不需要配置，开箱即用。
+
+## 🎉 使用
+
+现有指令列表：
+ba塔罗牌：随机发送一张ba塔罗牌以及正逆位含义
+ba占卜：以合并转发的方式发送一个牌阵进行占卜
+ba运势：随机发送一张ba塔罗牌以及对应的运势分数和描述
+ba塔罗牌解读：发送一张ba塔罗牌以及塔罗牌原画师的解读www
+
+
+## 📞 制作者
+
+### 黑纸折扇 [Perseus037] (https://github.com/Perseus037)
+
+QQ：1209228678
+
+## 🙏 感谢
+
+### shi0n_krbn（twitter@shi0n_krbn)画师妈妈的超好看ba塔罗牌和解读
+
+### CedarLullaby（https://space.bilibili.com/2910913）提供的翻译
+
+### 饼干 [student_2333] (https://github.com/lgc2333) 对于我学习编写插件和配置bot过程中的无私帮助
