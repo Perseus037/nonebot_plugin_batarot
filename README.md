@@ -49,7 +49,7 @@ ps：运势描述的句子是我自己编写的，如果有人愿意提供一些
 在 nonebot2 项目的根目录下打开命令行, 输入以下指令即可安装
 
 ```bash
-nb plugin install nonebot-plugin-babattleline
+nb plugin install nonebot_plugin_batarot
 ```
 -->
 
@@ -63,7 +63,7 @@ nb plugin install nonebot-plugin-babattleline
 <summary>pip</summary>
 
 ```bash
-pip install nonebot-plugin-babattleline
+pip install nonebot_plugin_batarot
 ```
 
 </details>
@@ -71,7 +71,7 @@ pip install nonebot-plugin-babattleline
 <summary>pdm</summary>
 
 ```bash
-pdm add nonebot-plugin-babattleline
+pdm add nonebot_plugin_batarot
 ```
 
 </details>
@@ -79,7 +79,7 @@ pdm add nonebot-plugin-babattleline
 <summary>poetry</summary>
 
 ```bash
-poetry add nonebot-plugin-babattleline
+poetry add nonebot_plugin_batarot
 ```
 
 </details>
@@ -87,7 +87,7 @@ poetry add nonebot-plugin-babattleline
 <summary>conda</summary>
 
 ```bash
-conda install nonebot-plugin-babattleline
+conda install nonebot_plugin_batarot
 ```
 
 </details>
@@ -98,7 +98,7 @@ conda install nonebot-plugin-babattleline
 [tool.nonebot]
 plugins = [
     # ...
-    "nonebot_plugin_babattleline"
+    "nonebot_plugin_batarot"
 ]
 ```
 
