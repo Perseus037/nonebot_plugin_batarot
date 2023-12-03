@@ -131,4 +131,4 @@ QQ：1209228678
 
 ### CedarLullaby（https://space.bilibili.com/2910913) 提供的翻译
 
-### KafCoppelia （https://github.com/KafCoppelia)的nonebot_plugin_tarot(~~直接开抄~~)
+### KafCoppelia （https://github.com/KafCoppelia) 的nonebot_plugin_tarot（~~直接开抄~~) 
