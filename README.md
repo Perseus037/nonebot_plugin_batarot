@@ -39,7 +39,7 @@ ps：运势描述的句子是我自己编写的，如果有人愿意提供一些
 建议直接将这个插件扔进nonebot2\.venv\Lib\site-packages根目录中，
 然后打开 nonebot2 项目根目录下的 `pyproject.toml` 文件,在 `[tool.nonebot]` 部分的 `plugins` 项里追加写入nonebot_plugin_babattleline即可
 
-插件处于开发阶段中（~~写的一坨屎山实在是没脸上架~~）暂未上架 NB 商店，
+pypi注册不了所以没法发包，暂未上架 NB 商店，只能用gitclone。。。
  
 
 
