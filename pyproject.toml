@@ -1,0 +1,44 @@
+[project]
+name = "nonebot-plugin-batarot"
+dynamic = ["version"]
+description = "A nonebot2 plugin for Blue Archive Tarot."
+authors = [{ name = "Perseus037", email = "1209228678@qq.com" }]
+dependencies = [
+    "nonebot2>=2.1.1",
+    "pydantic>=1.10.13,<2",
+    "nonebot-adapter-onebot>=2.3.1",
+    "nonebot-plugin-htmlrender>=0.2.2",
+    "nonebot-plugin-apscheduler>=0.3.0",
+    "aiohttp >=3.91,<4.0",
+    "httpx<0.25",
+]
+requires-python = ">=3.8,<4.0"
+readme = "README.md"
+license = { text = "MIT" }
+keywords = ["blue archive","tarot", "nonebot", "nonebot2", "bot", "qq"]
+classifiers = [
+    "Natural Language :: Chinese (Simplified)",
+    "Topic :: Communications",
+    "Topic :: Communications :: Chat",
+    "Topic :: Games/Entertainment",
+    "Topic :: Internet",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content"
+]
+
+[project.urls]
+homepage = "https://github.com/Perseus037/nonebot_plugin_batarot/"
+
+[project.optional-dependencies]
+menu = ["nonebot-plugin-PicMenu>=0.2"]
+
+[tool.pdm.version]
+source = "file"
+path = "nonebot_plugin_batarot/__init__.py"
+
+[tool.pdm.build]
+includes = []
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
