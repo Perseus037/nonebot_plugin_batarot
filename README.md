@@ -1,6 +1,8 @@
 <div align="center">
   <img src="https://github.com/Perseus037/nonebot_plugin_batarot/blob/main/Alice%20tarot%20picture.jpg" alt="碧蓝档案塔罗牌占卜" >
 
+# NoneBot-Plugin-Batarot
+
 _✨一个可以进行测运势，占卜的碧蓝档案塔罗牌nonebot2插件✨_
 
 <img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="python">
