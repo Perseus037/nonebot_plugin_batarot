@@ -11,7 +11,7 @@ __plugin_meta__ = PluginMetadata(
     type="application",
     homepage="https://github.com/Perseus037/nonebot-plugin-batarot",
     config=Config,
-    supported_adapters = {"nonebot.adapters.onebot.v11"},
+    supported_adapters = {"~onebot.v11"},
     extra = {"License":MIT,"Author":Perseus037},
 )
 
