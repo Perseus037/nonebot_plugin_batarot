@@ -1,3 +1,4 @@
+from .config import Config
 from nonebot import on_command
 from nonebot.plugin import PluginMetadata
 from .commands import handle_tarot, handle_tarot_spread, handle_daily_fortune, handle_tarot_reading
