@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://github.com/Perseus037/nonebot_plugin_batarot/blob/main/picture.jpg.jpg" alt="碧蓝档案塔罗牌占卜" width="280" height="280">
+  <img src="https://github.com/Perseus037/nonebot_plugin_batarot/blob/main/picture.jpg" alt="碧蓝档案塔罗牌占卜" width="280" height="280">
 
 _✨一个可以进行测运势，占卜的碧蓝档案塔罗牌nonebot2插件✨_
 
