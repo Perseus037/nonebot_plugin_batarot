@@ -12,7 +12,7 @@ __plugin_meta__ = PluginMetadata(
     homepage="https://github.com/Perseus037/nonebot-plugin-batarot",
     config=Config,
     supported_adapters = {"~onebot.v11"},
-    extra = {"License":MIT,"Author":Perseus037},
+    extra = {"License":"MIT","Author":"Perseus037"},
 )
 
 tarot = on_command("batarot", aliases={"ba塔罗牌"})
