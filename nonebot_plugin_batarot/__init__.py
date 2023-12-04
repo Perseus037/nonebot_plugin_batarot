@@ -10,6 +10,7 @@ __plugin_meta__ = PluginMetadata(
     usage = "使用命令：ba塔罗牌，ba占卜，ba运势，ba塔罗牌解读",
     type="application",
     homepage="https://github.com/Perseus037/nonebot-plugin-batarot",
+    config=Config,
     supported_adapters = {"nonebot.adapters.onebot.v11"},
     extra = {"License":MIT,"Author":Perseus037},
 )
