@@ -3,7 +3,7 @@ from nonebot import on_command
 from nonebot.plugin import PluginMetadata
 from .commands import handle_tarot, handle_tarot_spread, handle_daily_fortune, handle_tarot_reading
 
-__version__ = "0.1.4"
+__version__ = "0.1.4.post1"
 __plugin_meta__ = PluginMetadata(
     name="ba塔罗牌，运势与魔法占卜！",
     description="塔罗牌，占卜，运势，与特典：原作者塔罗牌解读 Author：Perseus037 <zzc1209228678@gmail.com>",
