@@ -4,11 +4,11 @@ from .commands import handle_tarot, handle_tarot_spread, handle_daily_fortune, h
 
 __version__ = "0.1.0.post2"
 __plugin_meta__ = PluginMetadata(
-    name="ba塔罗牌，运势与魔法占卜！",
-    description="塔罗牌，占卜，运势，与特典：原作者塔罗牌解读 Author：Perseus037 <zzc1209228678@gmail.com>",
+    name="nonebot_plugin_batarot",
+    description="碧蓝档案塔罗牌，运势与魔法占卜！",
     usage="使用命令：ba塔罗牌，ba占卜，ba运势，ba塔罗牌解读",
-    type="application",
     homepage="https://github.com/Perseus037/nonebot_plugin_batarot",
+    type="application",
     config=None,
     supported_adapters={"~onebot.v11"},
 )
