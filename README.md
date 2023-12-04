@@ -135,4 +135,4 @@ QQ：1209228678
 
 ### 饼干 [student_2333] (https://github.com/lgc2333) 对于我学习编写插件和配置qqbot，等过程中的无私帮助
 
-### KafCoppelia （https://github.com/KafCoppelia) 的nonebot_plugin_tarot提供的思路借鉴（~~直接开抄~~) 
+### KafCoppelia （https://github.com/KafCoppelia) 提供的思路借鉴（~~直接开抄~~) 
