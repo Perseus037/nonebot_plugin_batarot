@@ -5,15 +5,18 @@ from .commands import handle_tarot, handle_tarot_spread, handle_daily_fortune, h
 
 __version__ = "0.1.2"
 __plugin_meta__ = PluginMetadata(
-    name = "ba塔罗牌，运势与魔法占卜！",
-    description = "塔罗牌，占卜，运势，与特典：原作者塔罗牌解读",
-    usage = "使用命令：ba塔罗牌，ba占卜，ba运势，ba塔罗牌解读",
+    name="ba塔罗牌，运势与魔法占卜！",
+    description="塔罗牌，占卜，运势，与特典：原作者塔罗牌解读",
+    usage="使用命令：ba塔罗牌，ba占卜，ba运势，ba塔罗牌解读",
     type="application",
     homepage="https://github.com/Perseus037/nonebot_plugin_batarot",
     config=Config,
-    supported_adapters = {"~onebot.v11"},
-    extra = {"License":"MIT","Author":"Perseus037"},
+    supported_adapters={"~onebot.v11"},
+    extra={"License":"MIT","Author":"Perseus037"},
 )
+
+if extra:
+    __plugin_meta__.extra.update(extra)
 
 tarot = on_command("batarot", aliases={"ba塔罗牌"})
 tarot_spread = on_command("divination", aliases={"ba占卜"})
