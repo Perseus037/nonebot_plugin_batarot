@@ -1,4 +1,3 @@
-from .config import Config
 from nonebot import on_command
 from nonebot.plugin import PluginMetadata
 from .commands import handle_tarot, handle_tarot_spread, handle_daily_fortune, handle_tarot_reading
@@ -10,7 +9,7 @@ __plugin_meta__ = PluginMetadata(
     usage="使用命令：ba塔罗牌，ba占卜，ba运势，ba塔罗牌解读",
     type="application",
     homepage="https://github.com/Perseus037/nonebot_plugin_batarot",
-    config=Config,
+    config=None,
     supported_adapters={"~onebot.v11"},
 )
 
