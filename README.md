@@ -40,7 +40,7 @@ _✨一个可以进行测运势，占卜的碧蓝档案塔罗牌nonebot2插件�
 
 ## 💿 安装
 
-建议使用nb—cli直接安装
+建议使用包管理器（nb plugin install nonebot_plugin_batarot）直接安装
 
 如果使用gitclone安装的话，请将文件下载到site——package文件夹下，
 然后打开 nonebot2 项目根目录下的 `pyproject.toml` 文件,在 `[tool.nonebot]` 部分的 `plugins` 项里追加写入nonebot_plugin_babattleline即可
