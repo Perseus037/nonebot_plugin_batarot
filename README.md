@@ -22,7 +22,7 @@ _✨一个可以进行测运势，占卜的碧蓝档案塔罗牌nonebot2插件�
   <img src="https://img.shields.io/pypi/v/nonebot-plugin-batarot.svg" alt="pypi">
 </a>
 <a href="https://pypi.python.org/pypi/nonebot-plugin-batarot">
-  <img src="https://img.shields.io/pypi/dm/NoneBot-Plugin-Batarot" alt="pypi download">
+  <img src="https://img.shields.io/pypi/dm/nonebot-plugin-batarot" alt="pypi download">
 </a>
 
 </div>
