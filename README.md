@@ -16,7 +16,7 @@ _✨一个可以进行测运势，占卜的碧蓝档案塔罗牌nonebot2插件�
 <br />
 
 <a href="./LICENSE">
-  <img src="https://img.shields.io/github/license/lgc-NB2Dev/nonebot-plugin-batarot.svg" alt="license">
+  <img src="https://img.shields.io/github/license/lgc-NB2Dev/nonebot-plugin-uma.svg" alt="license">
 </a>
 <a href="https://pypi.python.org/pypi/nonebot-plugin-batarot">
   <img src="https://img.shields.io/pypi/v/nonebot-plugin-batarot.svg" alt="pypi">
