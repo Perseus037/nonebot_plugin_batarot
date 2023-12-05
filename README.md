@@ -16,13 +16,13 @@ _✨一个可以进行测运势，占卜的碧蓝档案塔罗牌nonebot2插件�
 <br />
 
 <a href="./LICENSE">
-  <img src="https://img.shields.io/github/license/lgc-NB2Dev/nonebot-plugin-uma.svg" alt="license">
+  <img src="https://img.shields.io/github/license/lgc-NB2Dev/nonebot-plugin-batarot.svg" alt="license">
 </a>
-<a href="https://pypi.python.org/pypi/nonebot-plugin-longtu">
-  <img src="https://img.shields.io/pypi/v/nonebot-plugin-uma.svg" alt="pypi">
+<a href="https://pypi.python.org/pypi/nonebot-plugin-batarot">
+  <img src="https://img.shields.io/pypi/v/nonebot-plugin-batarot.svg" alt="pypi">
 </a>
-<a href="https://pypi.python.org/pypi/nonebot-plugin-longtu">
-  <img src="https://img.shields.io/pypi/dm/nonebot-plugin-uma" alt="pypi download">
+<a href="https://pypi.python.org/pypi/nonebot-plugin-batarot">
+  <img src="https://img.shields.io/pypi/dm/nonebot-plugin-batarot" alt="pypi download">
 </a>
 
 </div>
