@@ -36,13 +36,14 @@ _✨一个可以进行测运势，占卜的碧蓝档案塔罗牌nonebot2插件�
 
 自己推的国内仓库，无需担心从github下载图片的一次次报错和网络加载失败问题
 
+有任何使用问题可以直接提issue或者发email到qq邮箱，我会尽快解决喵。
+
 ## 💿 安装
 
-建议直接将这个插件扔进nonebot2\.venv\Lib\site-packages根目录中，
+建议使用nb—cli直接安装
+
+如果使用gitclone安装的话，请将文件下载到site——package文件夹下，
 然后打开 nonebot2 项目根目录下的 `pyproject.toml` 文件,在 `[tool.nonebot]` 部分的 `plugins` 项里追加写入nonebot_plugin_babattleline即可
-
-pypi注册不了所以没法发包，暂未上架 NB 商店，只能用gitclone。。。
-
 
 <!--
 <details open>
