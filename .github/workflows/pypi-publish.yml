@@ -11,7 +11,6 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      # IMPORTANT: this permission is mandatory for trusted publishing
       id-token: write
 
     steps:
@@ -24,4 +23,10 @@ jobs:
         uses: pdm-project/setup-pdm@v3
 
       - name: Build and Publish distribution 📦 to PyPI
-        run: pdm publish
+        env:
+          PYPI_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          echo "__token__:${PYPI_PASSWORD}" > ~/.pypirc
+          pdm build
+          twine upload --skip-existing --repository pypi dist/*
