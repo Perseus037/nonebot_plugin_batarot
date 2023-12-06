@@ -136,14 +136,14 @@ QQ：1209228678
 
 ### CedarLullaby（https://space.bilibili.com/2910913) 提供的翻译
 
-### 饼干 [student_2333] (https://github.com/lgc2333) 对于我学习编写插件和配置qqbot，等过程中的无私帮助
+### 饼干 [student_2333] (https://github.com/lgc2333) 对于我学习编写插件和配置qqbot等过程中的无私帮助
 
 ### KafCoppelia （https://github.com/KafCoppelia) 提供的思路借鉴（~~直接开抄~~) 
 
 ## 📝 更新日志
 
 ### 0.2.0.post1
-- 修改运势描述语句，让所有描述变得更优美
+- 修改了全部的运势描述语句，加入了大量对国内外电影，诗歌，小说中的引用，来让所有描述变得更优美
 - 结合现实生活中的塔罗牌占卜，增加了六个新的占卜牌阵
   
 ### 0.2.0
