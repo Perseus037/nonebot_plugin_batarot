@@ -3,7 +3,7 @@
 
 # noneBot-plugin-batarot
 
-_🔮 一个可以进行测运势，占卜的碧蓝档案塔罗牌nonebot2插件🔮 _
+_🔮 一个可以进行测运势，魔法占卜与解读的碧蓝档案塔罗牌nonebot2插件🔮 _
 
 <img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="python">
 <a href="https://pdm.fming.dev">
@@ -31,13 +31,13 @@ _🔮 一个可以进行测运势，占卜的碧蓝档案塔罗牌nonebot2插件
 
 ## 📖 介绍
 
-一个可以进行测运势，魔法占卜与解读碧蓝档案塔罗牌nonebot2插件
+一个可以进行测运势，魔法占卜与解读的碧蓝档案塔罗牌nonebot2插件
 
 目前暂时有4个功能：ba塔罗牌，ba运势，ba占卜和ba塔罗牌解读，使用详见下方指令
 
 自己推的国内仓库，无需担心从github下载图片的一次次报错和网络加载失败等问题
 
-有任何问题可以直接提issue或者发email到qq邮箱，我会尽快解决喵，如果愿意提供一些更优美的运势预测句子更好喵。
+ps：有任何问题可以直接提issue或者发email到qq邮箱，我会尽快解决喵，如果愿意提供一些更优美的运势预测句子更好喵。
 
 ## 💿 安装
 
