@@ -136,7 +136,7 @@ QQ：1209228678
 
 ### CedarLullaby（https://space.bilibili.com/2910913) 提供的翻译
 
-### 饼干 [student_2333] (https://github.com/lgc2333) 对于我学习编写插件和配置qqbot等过程中的无私帮助
+### student_2333 (https://github.com/lgc2333) 对于我学习编写插件和配置qqbot等过程中的无私帮助
 
 ### KafCoppelia （https://github.com/KafCoppelia) 提供的思路借鉴（~~直接开抄~~) 
 
