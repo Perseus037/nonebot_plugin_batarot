@@ -3,7 +3,7 @@
 
 # NoneBot-Plugin-Batarot
 
-_✨一个可以进行测运势，占卜的碧蓝档案塔罗牌nonebot2插件✨_
+_🔮 一个可以进行测运势，占卜的碧蓝档案塔罗牌nonebot2插件🔮 _
 
 <img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="python">
 <a href="https://pdm.fming.dev">
