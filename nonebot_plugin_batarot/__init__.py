@@ -23,17 +23,3 @@ tarot.handle()(handle_tarot)
 tarot_spread.handle()(handle_tarot_spread)
 tarot_fortune.handle()(handle_daily_fortune)
 tarot_reading.handle()(handle_tarot_reading)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
