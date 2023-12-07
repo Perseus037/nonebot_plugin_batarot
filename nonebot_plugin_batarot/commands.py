@@ -143,16 +143,3 @@ async def handle_tarot_reading(bot: Bot, event: MessageEvent):
         reply = "未找到指定的塔罗牌或输入格式错误，请输入正确的卡牌编号或名称。\n"
 
     await bot.send(event, reply)
-
-
-
-
-
-
-
-
-
-
-
-
-
