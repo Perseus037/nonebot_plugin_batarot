@@ -32,8 +32,8 @@ jobs:
         run: |
             cat > ~/.pypirc << EOF
             [pypi]
-            username = __token__
-            password = ${PYPI_PASSWORD}
+            username = $PYPI_USERNAME
+            password = $PYPI_PASSWORD
             EOF
             pdm build
             twine upload --skip-existing --repository pypi dist/*
