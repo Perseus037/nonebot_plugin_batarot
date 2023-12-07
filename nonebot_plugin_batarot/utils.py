@@ -47,19 +47,3 @@ async def send_image_as_base64(url: str):
                 return f"base64://{b64_encoded}"
             else:
                 return None
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
