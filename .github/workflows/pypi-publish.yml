@@ -27,9 +27,14 @@ jobs:
 
       - name: Build and Publish distribution 📦 to PyPI
         env:
-          PYPI_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+           PYPI_USERNAME: ${{ secrets.PYPI_USERNAME }}
+           PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
-          echo "__token__:${PYPI_PASSWORD}" > ~/.pypirc
-          pdm build
-          twine upload --skip-existing --repository pypi dist/*
+            cat > ~/.pypirc << EOF
+            [pypi]
+            username = __token__
+            password = ${PYPI_PASSWORD}
+            EOF
+            pdm build
+            twine upload --skip-existing --repository pypi dist/*
+
