@@ -27,8 +27,8 @@ jobs:
 
       - name: Build and Publish distribution 📦 to PyPI
         env:
-           PYPI_USERNAME: ${{ secrets.PYPI_USERNAME }}
-           PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+           PYPI_USERNAME: "__token__"
+           PYPI_PASSWORD: ${{ secrets.__token__ }}
         run: |
             cat > ~/.pypirc << EOF
             [pypi]
