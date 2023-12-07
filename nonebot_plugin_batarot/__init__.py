@@ -2,7 +2,7 @@ from nonebot import on_command
 from nonebot.plugin import PluginMetadata
 from .commands import handle_tarot, handle_tarot_spread, handle_daily_fortune, handle_tarot_reading
 
-__version__ = "0.2.0.post1"
+__version__ = "0.2.0.post2"
 __plugin_meta__ = PluginMetadata(
     name="nonebot_plugin_batarot",
     description="碧蓝档案塔罗牌，运势预测与魔法占卜🔮",
