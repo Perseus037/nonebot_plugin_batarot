@@ -41,7 +41,7 @@ async def handle_tarot_spread(bot: Bot, event: MessageEvent):
         representation = random.choice(spread_info["representations"])[i]
 
         if random.random() < 0.5:
-            position = "顺位"
+            position = "正位"
             card_meaning = card['meaning']['up']
         else:
             position = "逆位"
