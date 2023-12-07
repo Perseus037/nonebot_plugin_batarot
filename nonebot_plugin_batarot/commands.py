@@ -1,5 +1,5 @@
 import random
-from nonebot.adapters.onebot.v11 import Bot, MessageEvent, MessageSegment
+from nonebot.adapters.onebot.v11 import Bot, Message, MessageEvent, MessageSegment, GroupMessageEvent
 from .utils import load_tarot_data, load_spread_data, random_tarot_card, send_image_as_base64, load_fortune_descriptions
 
 async def handle_tarot(bot: Bot, event: MessageEvent):
@@ -30,7 +30,7 @@ async def handle_tarot_spread(bot: Bot, event: MessageEvent):
         "data": {
             "name": "塔罗占卜",
             "uin": event.self_id,
-            "content": f"老师，你抽到的牌阵是：{chosen_spread}"
+            "content": f"老师，你抽到的牌阵是：{chosen_spread}\n"
         }
     })
 
@@ -65,7 +65,24 @@ async def handle_tarot_spread(bot: Bot, event: MessageEvent):
             }
         })
 
-    await bot.send_group_forward_msg(group_id=event.group_id, messages=nodes)
+    if isinstance(event, GroupMessageEvent):
+        # 群组聊天中使用合并转发
+        await bot.send_group_forward_msg(group_id=event.group_id, messages=nodes)
+    else:
+        # 私聊中合并消息内容并发送
+        combined_message = Message()
+        for node in nodes:
+            content = node['data']['content']
+            if isinstance(content, str):
+                combined_message.append(content)
+            elif isinstance(content, Message):
+                for segment in content:
+                    if segment.type == "text":
+                        combined_message.append(segment)
+                    elif segment.type == "image":
+                        combined_message.append(MessageSegment.image(segment.data["file"]))
+
+        await bot.send(event, combined_message)
 
     
 async def handle_daily_fortune(bot: Bot, event: MessageEvent):
@@ -126,7 +143,6 @@ async def handle_tarot_reading(bot: Bot, event: MessageEvent):
         reply = "未找到指定的塔罗牌或输入格式错误，请输入正确的卡牌编号或名称。\n"
 
     await bot.send(event, reply)
-
 
 
 
