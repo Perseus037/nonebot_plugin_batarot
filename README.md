@@ -100,7 +100,9 @@ ba运势：随机发送一张ba塔罗牌以及对应的运势分数和对应运�
 
 ba塔罗牌解读：发送一张ba塔罗牌以及塔罗牌原画师的解读，支持如：ba塔罗牌解读 21 或 ba塔罗牌解读 世界的命令，实现指定塔罗牌解读。
 
- 
+example：
+<img src="https://github.com/Perseus037/data/blob/master/nonebot_plugin_babattleline%20example.png" alt="示例"  width="550" height="350">
+
 ## 📞 制作者
 
 ### 黑纸折扇 [Perseus037] (https://github.com/Perseus037)
