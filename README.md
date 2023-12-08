@@ -42,6 +42,7 @@ ps：有任何问题或建议可以直接提issue或者发email到qq邮箱，我
 ## 💿 安装
 
 <details>
+<details open>
 <summary>使用 nb-cli 安装</summary>
 在 nonebot2 项目的根目录下打开命令行, 输入以下指令即可安装
 
