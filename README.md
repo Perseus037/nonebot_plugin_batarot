@@ -42,18 +42,15 @@ ps：有任何问题或建议可以直接提issue或者发email到qq邮箱，我
 ## 💿 安装
 
 <details>
-<summary>使用 nb-cli 安装</summary>
+<summary>使用 nb-cli 安装（推荐）</summary>
 在 nonebot2 项目的根目录下打开命令行, 输入以下指令即可安装
 
     nb plugin install nonebot-plugin-batarot
 
-注: 由于 nb-cli 不支持依赖组，因此需要启用词云和 AI 总结的用户要通过其他的包管理器安装额外的依赖
-
-    pip install nonebot-plugin-batarot[all]
 
 </details>
 
-<details>
+<details open>
 <summary>使用包管理器安装</summary>
 在 nonebot2 项目的插件目录下, 打开命令行, 根据你使用的包管理器, 输入相应的安装命令
 
