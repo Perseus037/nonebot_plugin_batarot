@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://github.com/Perseus037/nonebot_plugin_batarot/blob/main/Alice%20tarot%20picture.jpg" alt="碧蓝档案塔罗牌占卜" >
+  <img src="https://github.com/Perseus037/nonebot_plugin_batarot/blob/main/Alice%20tarot%20picture.jpg" alt="碧蓝档案塔罗牌占卜图标" >
 
 # noneBot-plugin-batarot
 
@@ -41,69 +41,50 @@ ps：有任何问题或建议可以直接提issue或者发email到qq邮箱，我
 
 ## 💿 安装
 
-建议使用包管理器（nb plugin install nonebot_plugin_batarot）直接安装
-
-如果使用gitclone安装的话，请将文件下载到site—package文件夹下，
-然后打开 nonebot2 项目根目录下的 `pyproject.toml` 文件,在 `[tool.nonebot]` 部分的 `plugins` 项里追加写入nonebot_plugin_babattleline即可
-
-<!--
-<details open>
-<summary>[推荐] 使用 nb-cli 安装</summary>
+<details>
+<summary>使用 nb-cli 安装</summary>
 在 nonebot2 项目的根目录下打开命令行, 输入以下指令即可安装
 
-```bash
-nb plugin install nonebot_plugin_batarot
-```
--->
+    nb plugin install nonebot-plugin-batarot
+
+注: 由于 nb-cli 不支持依赖组，因此需要启用词云和 AI 总结的用户要通过其他的包管理器安装额外的依赖
+
+    pip install nonebot-plugin-batarot[all]
 
 </details>
 
-<details open>
+<details>
 <summary>使用包管理器安装</summary>
 在 nonebot2 项目的插件目录下, 打开命令行, 根据你使用的包管理器, 输入相应的安装命令
 
-<details open>
+<details>
 <summary>pip</summary>
 
-```bash
-pip install nonebot_plugin_batarot
-```
+    pip install nonebot-plugin-batarot[all]
 
 </details>
 <details>
 <summary>pdm</summary>
 
-```bash
-pdm add nonebot_plugin_batarot
-```
+    pdm add nonebot-plugin-batarot[all]
 
 </details>
 <details>
 <summary>poetry</summary>
 
-```bash
-poetry add nonebot_plugin_batarot
-```
+    poetry add nonebot-plugin-batarot[all]
 
 </details>
 <details>
 <summary>conda</summary>
 
-```bash
-conda install nonebot_plugin_batarot
-```
+    conda install nonebot-plugin-batarot[all]
 
 </details>
 
-打开 nonebot2 项目根目录下的 `pyproject.toml` 文件, 在 `[tool.nonebot]` 部分的 `plugins` 项里追加写入
+打开 nonebot2 项目根目录下的 `pyproject.toml` 文件, 在 `[tool.nonebot]` 部分追加写入
 
-```toml
-[tool.nonebot]
-plugins = [
-    # ...
-    "nonebot_plugin_batarot"
-]
-```
+    plugins = ["nonebot_plugin_batarot"]
 
 </details>
 
