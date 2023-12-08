@@ -109,13 +109,15 @@ QQ：1209228678
 
 ## 🙏 感谢
 
-### shi0n_krbn（twitter@shi0n_krbn)提供的超好看ba塔罗牌和专业的解读
+在此感谢以下开发者(项目)对本项目做出的贡献：
 
-### CedarLullaby（https://space.bilibili.com/2910913) 提供的翻译
+-  [shi0n_krbn](twitter@shi0n_krbn) 提供的超好看ba塔罗牌原画和专业的解读
 
-### student_2333 (https://github.com/lgc2333) 对于我学习编写插件和配置qqbot等过程中的无私帮助
+-  [CedarLullaby](https://space.bilibili.com/2910913) 提供的解读翻译
 
-### KafCoppelia （https://github.com/KafCoppelia) 提供的思路借鉴（~~直接开抄~~) 
+-  [student_2333](https://github.com/lgc2333) 对于我学习编写插件和配置qqbot等过程中的无私帮助
+
+-  [nonebot_plugin_tarot](https://github.com/MinatoAquaCrews/nonebot_plugin_tarot) 提供的思路借鉴和代码参考（~~直接开抄~~) 
 
 ## 📝 更新日志
 
