@@ -104,8 +104,8 @@ ba塔罗牌解读：发送一张ba塔罗牌以及塔罗牌原画师的解读，�
 
 -  Q1: 如果出现运行插件报错ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED]该如何解决
 
-   A1: 可先使用pip install --upgrade certifi指令尝试更新python的证书库，
-       如果更新完报错仍存在，将utils.py中，async with session.get(url) as response:加参数改为async with session.get(url, ssl=False) as response:就可以避免该报错
+   A1: 可先使用pip install --upgrade certifi指令尝试更新python的证书库，如果更新完报错仍存在，将utils.py中，async with session.get(url) as response:
+       加参数改为async with session.get(url, ssl=False) as response:就可以避免该报错
 
 ## 📞 制作者
 
