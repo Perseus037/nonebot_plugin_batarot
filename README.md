@@ -1,7 +1,7 @@
 <div align="center">
   <img src="https://github.com/Perseus037/nonebot_plugin_batarot/blob/main/Alice%20tarot%20picture.jpg" alt="碧蓝档案塔罗牌占卜图标" >
 
-# noneBot-plugin-batarot
+# nonebot-plugin-batarot
 
 _🔮 一个可以进行测运势，魔法占卜与解读的碧蓝档案塔罗牌nonebot2插件🔮 _
 
