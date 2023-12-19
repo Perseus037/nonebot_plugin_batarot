@@ -1,24 +1,10 @@
 import random
 from nonebot.adapters.onebot.v11 import Bot, Message, MessageEvent, MessageSegment, GroupMessageEvent
 from nonebot.internal.adapter import Bot as InternalBot
-from .utils import load_tarot_data, load_spread_data, random_tarot_card, send_image_as_base64, load_fortune_descriptions
+from .utils import load_tarot_data, load_spread_data, random_tarot_card, send_image_as_base64, \
+    load_fortune_descriptions, send_image_as_bytes
 from nonebot_plugin_saa import Image, Text, MessageFactory, SaaTarget
 from .commands import tarot, tarot_spread, tarot_fortune, tarot_reading
-
-
-@tarot.handle()
-async def handle_tarot_one_v11(bot: Bot, event: MessageEvent):
-    cards_dict, tarot_urls = load_tarot_data()
-    card_name, card_meaning_up, card_meaning_down, card_url = random_tarot_card(cards_dict, tarot_urls)
-
-    reply = f"塔罗牌名称: {card_name}\n正位含义: {card_meaning_up}\n逆位含义: {card_meaning_down}\n"
-    if card_url:
-        base64_image = await send_image_as_base64(card_url)
-        if base64_image:
-            reply += MessageSegment.image(base64_image)
-        else:
-            reply += "图片加载失败"
-    await bot.send(event, reply)
 
 
 @tarot.handle()
@@ -31,11 +17,13 @@ async def handle_tarot():
     # 初始化消息工厂
     reply = MessageFactory([reply_text])
     if card_url:
-        # 图片加载成功则追加图片到消息工厂
-        reply.append(Image(card_url))
-    else:
-        # 图片加载失败则追缴加载失败消息到消息工厂
-        reply.append(Text("图片加载失败"))
+        image_bytes = await   send_image_as_bytes(card_url)
+        if image_bytes:
+            # 图片加载成功则追加图片到消息工厂
+            reply.append(Image(image_bytes))
+        else:
+            # 图片加载失败则追缴加载失败消息到消息工厂
+            reply.append(Text("图片加载失败"))
 
     await reply.send(reply="true")
     await tarot.finish()
@@ -120,6 +108,9 @@ Args:target    自动注入发送者对象
 
 @tarot_spread.handle()
 async def handle_tarot_spread(bot: InternalBot, target: SaaTarget):
+    # 防止重复触发handle
+    if InternalBot.type == "OneBot V11":
+        await tarot_spread.finish()
     spread_data = load_spread_data()
     cards_dict, tarot_urls = load_tarot_data()
 
@@ -153,39 +144,16 @@ async def handle_tarot_spread(bot: InternalBot, target: SaaTarget):
 
         # 追加解析信息
         if card_url:
-            reply_explain.append(Image(card_url))
-        else:
-            reply_explain.append(Text("图片加载失败\n"))
+            image_bytes = await   send_image_as_bytes(card_url)
+            if image_bytes:
+                reply_explain.append(Image(image_bytes))
+            else:
+                reply_explain.append(Text("图片加载失败\n"))
         # 逐条发送解析
         await reply_explain.send_to(target, bot)
 
     # 等待事件结束
     await tarot_spread.finish()
-
-
-@tarot_fortune.handle()
-async def handle_daily_fortune_one_v11(bot: Bot, event: MessageEvent):
-    cards_dict, tarot_urls = load_tarot_data()
-    card_key = random.choice(list(cards_dict.keys()))
-    card = cards_dict[card_key]
-    card_name = card['name_cn']
-    card_url = tarot_urls.get(f"tarot_{card_key}")
-
-    fortune_score = random.randint(1, 100)
-    fortune_descriptions = load_fortune_descriptions()
-    score_range = f"{(fortune_score - 1) // 10 * 10 + 1}-{(fortune_score - 1) // 10 * 10 + 10}"
-    fortune_description = random.choice(fortune_descriptions[score_range])
-
-    reply = f"今日塔罗牌：{card_name}\n今日运势指数：{fortune_score}\n运势解读：{fortune_description}\n"
-
-    if card_url:
-        base64_image = await send_image_as_base64(card_url)
-        if base64_image:
-            reply += MessageSegment.image(base64_image)
-        else:
-            reply += "图片加载失败"
-
-    await bot.send(event, reply)
 
 
 @tarot_fortune.handle()
@@ -207,56 +175,18 @@ async def handle_daily_fortune():
 
     # 追加图片信息
     if card_url:
-        reply.append(Image(card_url))
-    else:
-        reply += "图片加载失败"
+        image_bytes = await   send_image_as_bytes(card_url)
+        if image_bytes:
+            reply.append(Image(image_bytes))
+        else:
+            reply += "图片加载失败"
 
     await reply.send(reply="true")
     await tarot_fortune.finish()
 
 
 @tarot_reading.handle()
-async def handle_tarot_reading_one_v11(bot: Bot, event: MessageEvent):
-    cards_dict, tarot_urls = load_tarot_data()
-
-    user_input = str(event.get_message()).strip()
-    specific_card_key = None
-
-    if user_input == "ba塔罗牌解读":
-        specific_card_key = random.choice(list(cards_dict.keys()))
-
-    elif user_input.startswith("ba塔罗牌解读 "):
-        specific_card_input = user_input.split(" ", 1)[1].strip()
-
-        if specific_card_input.isdigit() and specific_card_input in cards_dict:
-            specific_card_key = specific_card_input
-        else:
-            specific_card_key = next(
-                (key for key, card in cards_dict.items() if card['name_cn'].lower() == specific_card_input.lower()),
-                None)
-
-    if specific_card_key:
-        card = cards_dict[specific_card_key]
-        card_name = card['name_cn']
-        card_description = "\n".join(card['description'])
-        card_url = tarot_urls.get(f"tarot_{specific_card_key}")
-
-        reply = f"塔罗牌名称: {card_name}\n原作者解读:\n{card_description}\n"
-
-        if card_url:
-            base64_image = await send_image_as_base64(card_url)
-            if base64_image:
-                reply += MessageSegment.image(base64_image)
-            else:
-                reply += "图片加载失败\n"
-    else:
-        reply = "未找到指定的塔罗牌或输入格式错误，请输入正确的卡牌编号或名称。\n"
-
-    await bot.send(event, reply)
-
-
-@tarot_reading.handle()
-async def handle_tarot_reading(bot: Bot, event: MessageEvent):
+async def handle_tarot_reading(event: MessageEvent):
     cards_dict, tarot_urls = load_tarot_data()
 
     user_input = str(event.get_message()).strip()
@@ -286,9 +216,11 @@ async def handle_tarot_reading(bot: Bot, event: MessageEvent):
 
         # 追加图片信息
         if card_url:
-            reply.append(Image(card_url))
-        else:
-            reply.append(Text("图片加载失败\n"))
+            image_bytes = await   send_image_as_bytes(card_url)
+            if image_bytes:
+                reply.append(Image(image_bytes))
+            else:
+                reply += "图片加载失败"
     else:
         reply = MessageFactory(Text("未找到指定的塔罗牌或输入格式错误，请输入正确的卡牌编号或名称。\n"))
 
