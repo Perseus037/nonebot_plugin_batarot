@@ -7,6 +7,21 @@ from .commands import tarot, tarot_spread, tarot_fortune, tarot_reading
 
 
 @tarot.handle()
+async def handle_tarot_one_v11(bot: Bot, event: MessageEvent):
+    cards_dict, tarot_urls = load_tarot_data()
+    card_name, card_meaning_up, card_meaning_down, card_url = random_tarot_card(cards_dict, tarot_urls)
+
+    reply = f"塔罗牌名称: {card_name}\n正位含义: {card_meaning_up}\n逆位含义: {card_meaning_down}\n"
+    if card_url:
+        base64_image = await send_image_as_base64(card_url)
+        if base64_image:
+            reply += MessageSegment.image(base64_image)
+        else:
+            reply += "图片加载失败"
+    await bot.send(event, reply)
+
+
+@tarot.handle()
 async def handle_tarot():
     cards_dict, tarot_urls = load_tarot_data()
     card_name, card_meaning_up, card_meaning_down, card_url = random_tarot_card(cards_dict, tarot_urls)
@@ -149,7 +164,32 @@ async def handle_tarot_spread(bot: InternalBot, target: SaaTarget):
 
 
 @tarot_fortune.handle()
-async def handle_daily_fortune(bot: Bot, event: MessageEvent):
+async def handle_daily_fortune_one_v11(bot: Bot, event: MessageEvent):
+    cards_dict, tarot_urls = load_tarot_data()
+    card_key = random.choice(list(cards_dict.keys()))
+    card = cards_dict[card_key]
+    card_name = card['name_cn']
+    card_url = tarot_urls.get(f"tarot_{card_key}")
+
+    fortune_score = random.randint(1, 100)
+    fortune_descriptions = load_fortune_descriptions()
+    score_range = f"{(fortune_score - 1) // 10 * 10 + 1}-{(fortune_score - 1) // 10 * 10 + 10}"
+    fortune_description = random.choice(fortune_descriptions[score_range])
+
+    reply = f"今日塔罗牌：{card_name}\n今日运势指数：{fortune_score}\n运势解读：{fortune_description}\n"
+
+    if card_url:
+        base64_image = await send_image_as_base64(card_url)
+        if base64_image:
+            reply += MessageSegment.image(base64_image)
+        else:
+            reply += "图片加载失败"
+
+    await bot.send(event, reply)
+
+
+@tarot_fortune.handle()
+async def handle_daily_fortune():
     cards_dict, tarot_urls = load_tarot_data()
     card_key = random.choice(list(cards_dict.keys()))
     card = cards_dict[card_key]
@@ -173,6 +213,46 @@ async def handle_daily_fortune(bot: Bot, event: MessageEvent):
 
     await reply.send(reply="true")
     await tarot_fortune.finish()
+
+
+@tarot_reading.handle()
+async def handle_tarot_reading_one_v11(bot: Bot, event: MessageEvent):
+    cards_dict, tarot_urls = load_tarot_data()
+
+    user_input = str(event.get_message()).strip()
+    specific_card_key = None
+
+    if user_input == "ba塔罗牌解读":
+        specific_card_key = random.choice(list(cards_dict.keys()))
+
+    elif user_input.startswith("ba塔罗牌解读 "):
+        specific_card_input = user_input.split(" ", 1)[1].strip()
+
+        if specific_card_input.isdigit() and specific_card_input in cards_dict:
+            specific_card_key = specific_card_input
+        else:
+            specific_card_key = next(
+                (key for key, card in cards_dict.items() if card['name_cn'].lower() == specific_card_input.lower()),
+                None)
+
+    if specific_card_key:
+        card = cards_dict[specific_card_key]
+        card_name = card['name_cn']
+        card_description = "\n".join(card['description'])
+        card_url = tarot_urls.get(f"tarot_{specific_card_key}")
+
+        reply = f"塔罗牌名称: {card_name}\n原作者解读:\n{card_description}\n"
+
+        if card_url:
+            base64_image = await send_image_as_base64(card_url)
+            if base64_image:
+                reply += MessageSegment.image(base64_image)
+            else:
+                reply += "图片加载失败\n"
+    else:
+        reply = "未找到指定的塔罗牌或输入格式错误，请输入正确的卡牌编号或名称。\n"
+
+    await bot.send(event, reply)
 
 
 @tarot_reading.handle()
