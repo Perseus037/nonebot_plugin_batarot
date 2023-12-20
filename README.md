@@ -117,6 +117,7 @@ ba塔罗牌解读：发送一张ba塔罗牌以及塔罗牌原画师的解读，�
     如果使用上述方法都没有解决问题
 
     将utils.py中，async with session.get(url) as response:加参数改为async with session.get(url, ssl=False) as response 就可以避免报错（缺点是有一定安全风险，非必要不建议）
+  
    
 - Q2:出现插件无法正常加载相关报错该如何解决？
 
@@ -125,6 +126,7 @@ ba塔罗牌解读：发送一张ba塔罗牌以及塔罗牌原画师的解读，�
      如果没有安装请使用pip install nonebot_plugin_saa在你机器人部署的虚拟环境中安装这个前置插件
   
      然后查看你的pyproject文件确保nonebot_plugin_saa被正确写入并加载
+  
 
 - Q3:我还有其他问题/报错，没有出现在上面，我也不知道该如何解决.
 
