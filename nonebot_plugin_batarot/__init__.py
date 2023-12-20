@@ -14,7 +14,7 @@ from . import handler as handler
 __version__ = "0.2.1.post1"
 __plugin_meta__ = PluginMetadata(
     name="碧蓝档案塔罗牌",
-    description="碧蓝档案塔罗牌，运势预测与魔法占卜🔮",
+    description="碧蓝档案塔罗牌，运势预测与魔法占卜🔮支持多适配器",
     usage="使用命令：ba塔罗牌，ba占卜，ba运势，ba塔罗牌解读",
     homepage="https://github.com/Perseus037/nonebot_plugin_batarot",
     type="application",
