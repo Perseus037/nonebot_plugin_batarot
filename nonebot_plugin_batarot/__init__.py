@@ -9,7 +9,9 @@ require("nonebot_plugin_saa")
 
 from nonebot_plugin_saa import __plugin_meta__ as saa_plugin_meta
 
-__version__ = "0.2.0.post3"
+from . import handler as handler
+
+__version__ = "0.2.1.post1"
 __plugin_meta__ = PluginMetadata(
     name="碧蓝档案塔罗牌",
     description="碧蓝档案塔罗牌，运势预测与魔法占卜🔮",
@@ -19,5 +21,3 @@ __plugin_meta__ = PluginMetadata(
     config=None,
     supported_adapters=saa_plugin_meta.supported_adapters,
 )
-
-from . import handler as handler
