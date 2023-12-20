@@ -157,7 +157,6 @@ async def handle_tarot_spread(bot: InternalBot, target: SaaTarget):
     await tarot_spread.finish()
 
 
-
 @tarot_fortune.handle()
 async def handle_daily_fortune():
     cards_dict, tarot_urls = load_tarot_data()
