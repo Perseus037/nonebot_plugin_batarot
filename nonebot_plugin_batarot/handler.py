@@ -21,7 +21,7 @@ async def handle_tarot():
         image_bytes = await   send_image_as_bytes(card_url)
         if image_bytes:
             # 图片加载成功则追加图片到消息工厂
-            reply.append(Image(image_bytes))
+            reply.append(Image(image_bytes)) #type: ignore
         else:
             # 图片加载失败则追缴加载失败消息到消息工厂
             reply.append(Text("图片加载失败"))
@@ -147,7 +147,7 @@ async def handle_tarot_spread(bot: InternalBot, target: SaaTarget):
         if card_url:
             image_bytes = await   send_image_as_bytes(card_url)
             if image_bytes:
-                reply_explain.append(Image(image_bytes))
+                reply_explain.append(Image(image_bytes)) #type: ignore
             else:
                 reply_explain.append(Text("图片加载失败\n"))
         # 逐条发送解析
@@ -179,7 +179,7 @@ async def handle_daily_fortune():
     if card_url:
         image_bytes = await   send_image_as_bytes(card_url)
         if image_bytes:
-            reply.append(Image(image_bytes))
+            reply.append(Image(image_bytes)) #type: ignore
         else:
             reply += "图片加载失败"
 
@@ -220,7 +220,7 @@ async def handle_tarot_reading(event: MessageEvent):
         if card_url:
             image_bytes = await  send_image_as_bytes(card_url)
             if image_bytes:
-                reply.append(Image(image_bytes))
+                reply.append(Image(image_bytes)) #type: ignore
             else:
                 reply += "图片加载失败"
     else:
