@@ -37,7 +37,7 @@ by 伦道夫·卡特
 
 ## 📖 介绍
 
-一个可以进行测运势，魔法占卜与解读的碧蓝档案塔罗牌nonebot2插件，使用nonebot_plugin_saa支持多适配器
+一个可以进行测运势，魔法占卜与解读的碧蓝档案塔罗牌nonebot2插件，使用nonebot_plugin_saa支持多适配器(onebotv11,onebotv12,kaiheila,telegram,feishu,red)
 
 目前暂时有4个功能：ba塔罗牌，ba运势，ba占卜和ba塔罗牌解读，使用详见下方指令
 
