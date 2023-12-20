@@ -37,7 +37,7 @@ by 伦道夫·卡特
 
 ## 📖 介绍
 
-一个可以进行测运势，魔法占卜与解读的碧蓝档案塔罗牌nonebot2插件，使用nonebot_plugin_saa支持多适配器(onebot.v11, onebot.v12, kaiheila, telegram, feishu, red)
+一个可以进行测运势，魔法占卜与解读的碧蓝档案塔罗牌nonebot2插件，使用nonebot_plugin_sned_anything_anywhere来实现多适配器支持(onebot.v11, onebot.v12, qqguild，kaiheila, telegram, feishu, red)
 
 目前暂时有4个功能：ba塔罗牌，ba运势，ba占卜和ba塔罗牌解读，使用详见下方指令
 
@@ -121,11 +121,11 @@ ba塔罗牌解读：发送一张ba塔罗牌以及塔罗牌原画师的解读，�
    
 - Q2:出现插件无法正常加载相关报错该如何解决？
 
-  A2:请先确认你已经安装了nonebot_plugin_saa
+  A2:请先确认你已经安装了nonebot-plugin-send-anything-anywhere，并且是最新版本
   
-     如果没有安装请使用pip install nonebot_plugin_saa在你机器人部署的虚拟环境中安装这个前置插件
+     如果没有安装请使用pip install nonebot-plugin-send-anything-anywhere在你机器人部署的虚拟环境中安装这个前置插件
   
-     然后查看你的pyproject文件确保nonebot_plugin_saa被正确写入并加载
+     然后查看你的pyproject文件确保nonebot_plugin_saa（nonebot-plugin-send-anything-anywhere）被正确写入并加载
   
 
 - Q3:我还有其他问题/报错，没有出现在上面，我也不知道该如何解决.
