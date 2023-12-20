@@ -143,7 +143,11 @@ QQ：1209228678
 
 -  [student_2333](https://github.com/lgc2333) 对于我学习编写插件和配置qqbot等过程中的无私帮助
 
--  [nonebot_plugin_tarot](https://github.com/MinatoAquaCrews/nonebot_plugin_tarot) 提供的代码参考（~~直接开抄~~) 
+-  [Nicr0n](https://github.com/Nicr0n)  使插件实现多适配器支持
+
+-  [nonebot_plugin_tarot](https://github.com/MinatoAquaCrews/nonebot_plugin_tarot) 提供的代码参考（~~直接开抄~~)
+
+-  [nonebot_plugin_saa](https://github.com/MountainDash/nonebot-plugin-send-anything-anywhere) 处理不同 adapter 消息的适配和发送
 
 ## 📝 更新日志
 
