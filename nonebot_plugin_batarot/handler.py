@@ -1,11 +1,12 @@
 import random
+
 from nonebot.adapters.onebot.v11 import Bot, Message, MessageEvent, MessageSegment, GroupMessageEvent
 from nonebot.internal.adapter import Bot as InternalBot
-from .utils import load_tarot_data, load_spread_data, random_tarot_card, send_image_as_base64, \
-    load_fortune_descriptions, send_image_as_bytes
 from nonebot_plugin_saa import Image, Text, MessageFactory, SaaTarget
-from .commands import tarot, tarot_spread, tarot_fortune, tarot_reading
+from nonebot.log import logger
 
+from .commands import tarot, tarot_spread, tarot_fortune, tarot_reading
+from .utils import load_tarot_data, load_spread_data, random_tarot_card, send_image_as_base64, load_fortune_descriptions, send_image_as_bytes
 
 @tarot.handle()
 async def handle_tarot():
@@ -25,7 +26,7 @@ async def handle_tarot():
             # 图片加载失败则追缴加载失败消息到消息工厂
             reply.append(Text("图片加载失败"))
 
-    await reply.send(reply="true")
+    await reply.send(reply=True)
     await tarot.finish()
 
 
@@ -79,7 +80,6 @@ async def handle_tarot_spread_one_v11(bot: Bot, event: MessageEvent):
             }
         })
 
-    await tarot_spread.finish()
     if isinstance(event, GroupMessageEvent):
         # 群组聊天中使用合并转发
         await bot.send_group_forward_msg(group_id=event.group_id, messages=nodes)
@@ -98,6 +98,7 @@ async def handle_tarot_spread_one_v11(bot: Bot, event: MessageEvent):
                         combined_message.append(MessageSegment.image(segment.data["file"]))
 
         await bot.send(event, combined_message)
+    await tarot_spread.finish()
 
 
 # 受限于其他Adapter影响 采用逐条发送的形式(文艺复兴)
@@ -156,6 +157,7 @@ async def handle_tarot_spread(bot: InternalBot, target: SaaTarget):
     await tarot_spread.finish()
 
 
+
 @tarot_fortune.handle()
 async def handle_daily_fortune():
     cards_dict, tarot_urls = load_tarot_data()
@@ -181,7 +183,7 @@ async def handle_daily_fortune():
         else:
             reply += "图片加载失败"
 
-    await reply.send(reply="true")
+    await reply.send(reply=True)
     await tarot_fortune.finish()
 
 
@@ -216,7 +218,7 @@ async def handle_tarot_reading(event: MessageEvent):
 
         # 追加图片信息
         if card_url:
-            image_bytes = await   send_image_as_bytes(card_url)
+            image_bytes = await  send_image_as_bytes(card_url)
             if image_bytes:
                 reply.append(Image(image_bytes))
             else:
@@ -224,5 +226,12 @@ async def handle_tarot_reading(event: MessageEvent):
     else:
         reply = MessageFactory(Text("未找到指定的塔罗牌或输入格式错误，请输入正确的卡牌编号或名称。\n"))
 
-    await reply.send(reply="true")
+    await reply.send(reply=True)
     await tarot_reading.finish()
+
+
+
+
+
+
+
