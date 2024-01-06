@@ -150,7 +150,7 @@ QQ：1209228678
 
 -  [CedarLullaby](https://space.bilibili.com/2910913) 提供的解读翻译
 
--  [student_2333](https://github.com/lgc2333) 对于我学习编写插件和配置qqbot等过程中的无私帮助
+-  [student_2333](https://github.com/lgc2333) 的无私帮助
 
 -  [Nicr0n](https://github.com/Nicr0n)  使插件实现多适配器支持
 
