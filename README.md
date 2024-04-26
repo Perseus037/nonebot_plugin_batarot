@@ -150,7 +150,7 @@ EMAIL：1209228678@qq.com
 
 在此感谢以下开发者(项目)对本项目做出的贡献：
 
--  [shi0n_krbn](twitter@shi0n_krbn) 提供的超好看ba塔罗牌原画和专业的解读
+-  [shi0n_krbn](twitter@shi0n_krbn) Twitter塔罗牌原画作者，以及专业的解读
 
 -  [CedarLullaby](https://space.bilibili.com/2910913) 提供的解读翻译
 
