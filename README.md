@@ -111,10 +111,17 @@ ba运势：随机发送一张ba塔罗牌以及对应的运势分数和对应运�
 ba塔罗牌解读：发送一张ba塔罗牌以及塔罗牌原画师的解读，支持如：ba塔罗牌解读 21 或 ba塔罗牌解读 世界的命令，实现指定塔罗牌解读。
 
 ## 💡 Q/A
+- Q1:无法成功发送图片，输入指令后图片很久才响应，该如何解决？
 
-- Q1:出现运行插件报错ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED](ssl证书验证报错）该如何解决？
+  A1:这主要是图床的锅，使用魔法进行科学上网可以有效避免该问题。
+  
+     原来用的国内图床结果有很多日本网友给我发邮件要求我使用日本ip可以访问的图床(?),所以有时候国内ip访问图床可能会抽风。
+  
+     有空我会增加一个配置项默认从本地读取，一劳永逸。
 
-  A1:先使用pip install --upgrade certifi指令尝试更新python的证书库
+- Q2:出现运行插件报错ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED](ssl证书验证报错）该如何解决？
+
+  A2:先使用pip install --upgrade certifi指令尝试更新python的证书库
 
     你的梯子配置的是system proxy也可能会导致该报错，改为tun模式使用虚拟网卡就可以通过ssl验证了。
 
@@ -123,18 +130,18 @@ ba塔罗牌解读：发送一张ba塔罗牌以及塔罗牌原画师的解读，�
     将utils.py中，async with session.get(url) as response:加参数改为async with session.get(url, ssl=False) as response 就可以避免报错（缺点是有一定安全风险，非必要不建议）
   
    
-- Q2:出现插件无法正常加载相关报错该如何解决？
+- Q3:出现插件无法正常加载相关报错该如何解决？
 
-  A2:请先确认你已经安装了nonebot-plugin-send-anything-anywhere，并且是最新版本
+  A3:请先确认你已经安装了nonebot-plugin-send-anything-anywhere，并且是最新版本
   
      如果没有安装请使用pip install nonebot-plugin-send-anything-anywhere在你机器人部署的虚拟环境中安装这个前置插件
   
      然后查看你的pyproject文件确保nonebot_plugin_saa（nonebot-plugin-send-anything-anywhere）被正确写入并加载
   
 
-- Q3:我还有其他问题/报错，没有出现在上面，我也不知道该如何解决.
+- Q4:我还有其他问题/报错，没有出现在上面，我也不知道该如何解决.
 
-  A3:出现如无法加载图片，插件报错，前置插件版本冲突等问题，欢迎提issue，我会尽快解决
+  A4:出现如无法加载图片，插件报错，前置插件版本冲突等问题，欢迎提issue，我会尽快解决
      
      如果你想给这个插件增加新的功能/补充完善代码，欢迎提pull request，我把你拉进来方便你直接改源码。
 
@@ -145,6 +152,7 @@ ba塔罗牌解读：发送一张ba塔罗牌以及塔罗牌原画师的解读，�
 ### 黑纸折扇 [Perseus037] (https://github.com/Perseus037)
 
 EMAIL：1209228678@qq.com
+企鹅：1209228678
 
 ## 🙏 感谢
 
