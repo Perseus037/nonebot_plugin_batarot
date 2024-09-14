@@ -119,6 +119,9 @@ ba塔罗牌解读：发送一张ba塔罗牌以及塔罗牌原画师的解读，�
   
      有空我会增加一个配置项默认从本地读取，一劳永逸。
 
+     二编：已经改为从本地发送，图片清晰度较高下载可能比较慢，建议使用魔法科学上网。
+  
+
 - Q2:出现运行插件报错ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED](ssl证书验证报错）该如何解决？
 
   A2:先使用pip install --upgrade certifi指令尝试更新python的证书库
