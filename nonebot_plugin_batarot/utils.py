@@ -1,11 +1,13 @@
 import json
 import os
 import random
-import aiohttp
 import base64
 from io import BytesIO
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# 图片文件夹路径
+image_dir = os.path.join(current_dir, "image")
 
 
 def load_tarot_data():
@@ -39,26 +41,25 @@ def load_fortune_descriptions():
     with open(os.path.join(current_dir, "batarot_fortune.json"), 'r', encoding='utf-8') as file:
         return json.load(file)
 
+# 从本地读取图片并返回BytesIO
+def send_image_as_bytes(image_path: str):
+    local_image_path = os.path.join(image_dir, image_path)  
+    if os.path.exists(local_image_path):
+        with open(local_image_path, 'rb') as image_file:
+            image_data = image_file.read()
+            return BytesIO(image_data)
+    else:
+        print(f"Image not found at: {local_image_path}")  
+        return None
 
-# 以base64格式发送图片
-async def send_image_as_base64(url: str):
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
-            if response.status == 200:
-                image_data = await response.read()
-                buffered = BytesIO(image_data)
-                b64_encoded = base64.b64encode(buffered.getvalue()).decode('utf-8')
-                return f"base64://{b64_encoded}"
-            else:
-                return None
-
-# 返回BytesIO对象图片
-async def send_image_as_bytes(url: str):
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
-            if response.status == 200:
-                image_data = await response.read()
-                buffered = BytesIO(image_data)
-                return buffered
-            else:
-                return None
+# 从本地读取图片并以base64格式发送
+def send_image_as_base64(image_path: str):
+    local_image_path = os.path.join(image_dir, image_path)  
+    if os.path.exists(local_image_path):
+        with open(local_image_path, 'rb') as image_file:
+            image_data = image_file.read()
+            b64_encoded = base64.b64encode(image_data).decode('utf-8')
+            return f"base64://{b64_encoded}"
+    else:
+        print(f"Image not found at: {local_image_path}")  
+        return None
