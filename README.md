@@ -122,33 +122,22 @@ ba塔罗牌解读：发送一张ba塔罗牌以及塔罗牌原画师的解读，�
      二编：已经改为从本地发送，第一次安装插件由于图片清晰度较高下载可能比较慢，建议使用魔法科学上网。
   
 
-- Q2:出现运行插件报错ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED](ssl证书验证报错）该如何解决？
+- Q2:出现插件无法正常加载相关报错该如何解决？
 
-  A2:先使用pip install --upgrade certifi指令尝试更新python的证书库
-
-    你的梯子配置的是system proxy也可能会导致该报错，改为tun模式使用虚拟网卡就可以通过ssl验证了。
-
-    如果使用上述方法都没有解决问题
-
-    将utils.py中，async with session.get(url) as response:加参数改为async with session.get(url, ssl=False) as response 就可以避免报错（缺点是有一定安全风险，非必要不建议）
-  
-   
-- Q3:出现插件无法正常加载相关报错该如何解决？
-
-  A3:请先确认你已经安装了nonebot-plugin-send-anything-anywhere，并且是最新版本
+  A2:请先确认你已经安装了nonebot-plugin-send-anything-anywhere，并且是最新版本
   
      如果没有安装请使用pip install nonebot-plugin-send-anything-anywhere在你机器人部署的虚拟环境中安装这个前置插件
   
      然后查看你的pyproject文件确保nonebot_plugin_saa（nonebot-plugin-send-anything-anywhere）被正确写入并加载
   
 
-- Q4:我还有其他问题/报错，没有出现在上面，我也不知道该如何解决.
+- Q3:我还有其他问题/报错，没有出现在上面，我也不知道该如何解决.
 
-  A4:出现如无法加载图片，插件报错，前置插件版本冲突等问题，欢迎提issue，我会尽快解决
+  A3:出现如无法加载图片，插件报错，前置插件版本冲突等问题，欢迎提issue或直接私信我，我会尽快解决。
      
      如果你想给这个插件增加新的功能/补充完善代码，欢迎提pull request，我把你拉进来方便你直接改源码。
 
-     关于如何加载插件以及bot的安装配置问题，请去nb官方群聊进行咨询，我不负责也没有义务解答。
+     关于bot的安装配置问题，请去nb官方群聊进行咨询，我不负责也没有义务解答。
 
 ## 📞 制作者
 
