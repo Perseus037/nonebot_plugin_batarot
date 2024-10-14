@@ -11,7 +11,7 @@ from nonebot_plugin_saa import __plugin_meta__ as saa_plugin_meta
 
 from . import handler as handler
 
-__version__ = "0.2.2.post2"
+__version__ = "0.2.2.post4"
 __plugin_meta__ = PluginMetadata(
     name="碧蓝档案塔罗牌",
     description="碧蓝档案塔罗牌，运势预测与魔法占卜🔮支持多适配器",
