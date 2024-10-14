@@ -166,9 +166,10 @@ EMAIL：1209228678@qq.com
 -  [nonebot-plugin-send-anything-anywhere](https://github.com/MountainDash/nonebot-plugin-send-anything-anywhere) 处理不同 adapter 消息的适配和发送
 
 ## 📝 更新日志
-### 0.2.2.post1-post2
+### 0.2.2.post1-post3
 - 将图片发送改为从本地读取，优化牌阵指令部分代码
 - 优化关于合并转发部分的代码逻辑
+- -更新依赖pydantic>=2.0.0
 
 ### 0.2.1.post2-post3
 - 更换图床来提高响应速度
