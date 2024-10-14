@@ -49,7 +49,7 @@ _🔮 一个可以进行测运势，魔法占卜与解读的碧蓝档案塔罗�
 
 目前暂有4个功能：ba塔罗牌，ba运势，ba占卜和ba塔罗牌解读，使用详见下方指令
 
-请下载最新的发版v0.2.2.post2！！！
+请下载最新的发版！！！
 
 ## 💿 安装
 
@@ -166,7 +166,7 @@ EMAIL：1209228678@qq.com
 -  [nonebot-plugin-send-anything-anywhere](https://github.com/MountainDash/nonebot-plugin-send-anything-anywhere) 处理不同 adapter 消息的适配和发送
 
 ## 📝 更新日志
-### 0.2.2.post1-post2
+### 0.2.2.post1-post4
 - 将图片发送改为从本地读取，优化牌阵指令部分代码
 - 优化关于合并转发部分的代码逻辑
 
