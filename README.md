@@ -133,21 +133,29 @@ ba塔罗牌解读：发送一张ba塔罗牌以及来自塔罗牌原画师大人s
 
 - Q2:出现插件无法正常加载相关报错该如何解决？
 
-  A2:请先确认你已经安装了nonebot-plugin-send-anything-anywhere，并且是最新版本
+  A2:请先确认你已经安装了nonebot-plugin-send-anything-anywhere，并且是最新版本。
   
      如果没有安装请使用pip install nonebot-plugin-send-anything-anywhere在你机器人部署的虚拟环境中安装这个前置插件
   
      然后查看你的pyproject文件确保nonebot_plugin_saa（nonebot-plugin-send-anything-anywhere）被正确写入并加载
-
   
+- Q3：关于pydantic版本的问题
 
-- Q3:我还有其他问题/报错，没有出现在上面，我也不知道该如何解决.
+  A3:如果你使用的是pydantic 1.x，不用更改文件，可以直接运行。
+     如果你使用的是pydantic2 ：
+    1. 安装pydantic_settings包
+    2. 将本插件根目录下第1行import的pydantic修改为pydantic_setting
+    即可正常运行
+  
+- Q4:我还有其他问题/报错，没有出现在上面，我也不知道该如何解决.
 
-  A3:出现如无法加载图片，插件报错，前置插件版本冲突等问题，欢迎提issue或直接qq私信我，我会尽快解决。本插件为一时兴起写着玩的，出现解决不了的问题请自行寻找其他方案。
+  A4:出现如无法加载图片，插件报错，前置插件版本冲突等问题，欢迎提issue，我会尽快解决。本插件为一时兴起写着玩的，出现解决不了的问题请自行寻找其他方案。
      
-     如果你想给这个插件增加新的功能/补充完善代码，欢迎提pull request，我把你拉进来方便你直接改源码。
+     如果你想给这个插件增加新的功能/补充完善代码，欢迎提pr。
 
      关于bot的安装配置问题，请去nb官方群聊进行咨询，我不负责也没有义务解答。
+
+
 
 ## 📞 制作者
 
