@@ -142,7 +142,7 @@ ba塔罗牌解读：发送一张ba塔罗牌以及来自塔罗牌原画师大人s
 - Q3：关于pydantic版本的问题
 
   A3:如果你使用的是pydantic 1.x，不用更改文件，可以直接运行。
-     如果你使用的是pydantic2 ：
+     如果你使用的是pydantic版本 >= 2.0 ：
     1. 安装pydantic_settings包
     2. 将本插件根目录下第1行import的pydantic修改为pydantic_setting
     即可正常运行
