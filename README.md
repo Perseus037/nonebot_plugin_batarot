@@ -96,6 +96,13 @@ _🔮 一个可以进行测运势，魔法占卜与解读的碧蓝档案塔罗�
 
 </details>
 
+<br>
+<summary>如果你使用pydantic2…<summary>
+请在命令行中输入以下指令
+  
+    pip install pydantic_settings
+然后，打开插件文件夹内的 config.py 文件(形如 ...\Nonebot\\.venv\Lib\site-packages\nonebot_plugin_batarot\config.py )，按照提示修改并保存。
+
 ## ⚙️ 配置
 
 forward_mode: bool = False
