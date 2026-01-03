@@ -1,4 +1,7 @@
-from pydantic import BaseSettings
+try:
+    from pydantic_settings import BaseSettings
+except ImportError:
+    from pydantic import BaseSettings
 #
 # 如果你使用 pydantic2 ：
 # 1. 安装pydantic_settings包
