@@ -14,6 +14,6 @@ class Config(BaseSettings):
 
     class Config:
         env_file = ".env.prod" 
-        # extra = "ignored"
+        # extra = "ignore"
 
 config = Config()
