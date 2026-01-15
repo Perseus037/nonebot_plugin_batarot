@@ -148,7 +148,7 @@ async def handle_tarot_reading(event: MessageEvent):
     if user_input == "ba塔罗牌解读":
         specific_card_key = random.choice(list(cards_dict.keys()))
 
-    elif user_input.startswith("ba塔罗牌解读 "):
+    elif user_input.startswith("ba塔罗牌解读 ") or user_input.startswith("塔罗牌解读"):
         specific_card_input = user_input.split(" ", 1)[1].strip()
 
         if specific_card_input.isdigit() and specific_card_input in cards_dict:
