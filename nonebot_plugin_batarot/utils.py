@@ -30,11 +30,12 @@ def random_tarot_card(cards_dict, urls_dict):
     card_name = card['name_cn']
     card_meaning_up = card['meaning']['up']
     card_meaning_down = card['meaning']['down']
+    card_meaning_up_or_down = random.choice([card_meaning_up, card_meaning_down])
 
     url_key = f"tarot_{card_key}"
     card_url = urls_dict.get(url_key)
 
-    return card_name, card_meaning_up, card_meaning_down, card_url
+    return card_name, "up" if card_meaning_up_or_down == card_meaning_up else "down", card_meaning_up_or_down, card_url
 
 
 def load_fortune_descriptions():

@@ -13,10 +13,10 @@ from .utils import load_tarot_data, load_spread_data, random_tarot_card, send_im
 @tarot.handle()
 async def handle_tarot():
     cards_dict, tarot_urls = load_tarot_data()
-    card_name, card_meaning_up, card_meaning_down, card_url = random_tarot_card(cards_dict, tarot_urls)
+    card_name, position, card_meaning, card_url = random_tarot_card(cards_dict, tarot_urls)
 
     # 构建回复文字
-    reply_text = Text(f"塔罗牌名称: {card_name}\n正位含义: {card_meaning_up}\n逆位含义: {card_meaning_down}\n")
+    reply_text = Text(f"塔罗牌名称: {card_name}\n" + "正位" if position == "up" else "逆位" + f"含义: {card_meaning}\n")
     # 初始化消息工厂
     reply = MessageFactory([reply_text])
     
