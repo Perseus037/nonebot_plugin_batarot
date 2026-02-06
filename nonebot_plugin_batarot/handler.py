@@ -1,5 +1,6 @@
 import random
 
+
 from nonebot.adapters.onebot.v11 import Bot, Message, MessageEvent, MessageSegment, GroupMessageEvent
 from nonebot.internal.adapter import Bot as InternalBot
 from nonebot.plugin import on_command
@@ -8,7 +9,7 @@ from nonebot.log import logger
 
 from .config import config
 from .commands import tarot, tarot_spread, tarot_fortune, tarot_reading
-from .utils import load_tarot_data, load_spread_data, random_tarot_card, send_image_as_base64, load_fortune_descriptions, send_image_as_bytes
+from .utils import load_tarot_data, load_spread_data, random_tarot_card, send_image_as_base64, load_fortune_descriptions, send_image_as_bytes, rotate_image_180
 
 @tarot.handle()
 async def handle_tarot():
@@ -16,16 +17,21 @@ async def handle_tarot():
     card_name, position, card_meaning, card_url = random_tarot_card(cards_dict, tarot_urls)
 
     # 构建回复文字
-    reply_text = Text(f"塔罗牌名称: {card_name}\n" + "正位" if position == "up" else "逆位" + f"含义: {card_meaning}\n")
+    reply_text = Text(f"塔罗牌名称: {card_name}\n" + ("正位" if position == "up" else "逆位") + f"含义: {card_meaning}\n")
     # 初始化消息工厂
     reply = MessageFactory([reply_text])
     
     if card_url:
         
         image_bytes = send_image_as_bytes(card_url)
+         # type: ignore
+        if position != "up":
+            # 如果是逆位则反转图片字节流
+            image_bytes = rotate_image_180(image_bytes)
         if image_bytes:
             # 图片加载成功则追加图片到消息工厂
             reply.append(Image(image_bytes))  # type: ignore
+
         else:
             # 图片加载失败则追加加载失败消息到消息工厂
             reply.append(Text("图片加载失败"))

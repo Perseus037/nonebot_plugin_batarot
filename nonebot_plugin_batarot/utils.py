@@ -3,6 +3,7 @@ import os
 import random
 import base64
 from io import BytesIO
+from PIL import Image
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -28,14 +29,16 @@ def random_tarot_card(cards_dict, urls_dict):
     card_key = random.choice(list(cards_dict.keys()))
     card = cards_dict[card_key]
     card_name = card['name_cn']
-    card_meaning_up = card['meaning']['up']
-    card_meaning_down = card['meaning']['down']
-    card_meaning_up_or_down = random.choice([card_meaning_up, card_meaning_down])
+    
+    # 随机决定正逆位
+    is_up = random.choice([True, False])
+    direction = "up" if is_up else "down"
+    card_meaning = card['meaning'][direction]
 
     url_key = f"tarot_{card_key}"
     card_url = urls_dict.get(url_key)
 
-    return card_name, "up" if card_meaning_up_or_down == card_meaning_up else "down", card_meaning_up_or_down, card_url
+    return card_name, direction, card_meaning, card_url
 
 
 def load_fortune_descriptions():
@@ -64,3 +67,12 @@ def send_image_as_base64(image_path: str):
     else:
         print(f"Image not found at: {local_image_path}")  
         return None
+
+# 图片字节流反转180度
+def rotate_image_180(image_bytes: BytesIO) -> BytesIO:
+    image = Image.open(image_bytes)
+    rotated_image = image.transpose(Image.Transpose.ROTATE_180)
+    output_buffer = BytesIO()
+    rotated_image.save(output_buffer, format=image.format)
+    output_buffer.seek(0)
+    return output_buffer
