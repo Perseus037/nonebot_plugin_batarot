@@ -45,6 +45,30 @@ def load_fortune_descriptions():
     with open(os.path.join(current_dir, "batarot_fortune.json"), 'r', encoding='utf-8') as file:
         return json.load(file)
 
+
+def match_card_key(cards_dict, text: str):
+    """按编号、中文名或英文名匹配一张塔罗牌，返回卡牌 key；未匹配到则返回 None。"""
+    text = (text or "").strip()
+    if not text:
+        return None
+
+    if text.isdigit() and text in cards_dict:
+        return text
+
+    lowered = text.lower()
+    for key, card in cards_dict.items():
+        if str(card.get('name_cn', '')).strip().lower() == lowered:
+            return key
+        if str(card.get('name_en', '')).strip().lower() == lowered:
+            return key
+    return None
+
+
+def get_card_en_name(cards_dict, card_key: str) -> str:
+    """取卡牌的英文名，用于拼接大模型提示词。"""
+    card = cards_dict.get(card_key) or {}
+    return str(card.get('name_en', '')).strip()
+
 # 从本地读取图片并返回BytesIO
 def send_image_as_bytes(image_path: str):
     local_image_path = os.path.join(image_dir, image_path)  
