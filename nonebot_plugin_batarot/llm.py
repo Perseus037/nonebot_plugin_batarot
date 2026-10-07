@@ -17,8 +17,7 @@ import functools
 import json
 import socket
 from typing import Any, Dict, List, Optional, Tuple
-
-from nonebot.log import logger
+from urllib.parse import urlsplit
 
 try:  # aiohttp 是插件声明的依赖，但开发环境中可能没有安装
     import aiohttp
@@ -132,7 +131,7 @@ async def _post_json(
         except asyncio.TimeoutError as e:
             raise LLMError(f"请求超时（{timeout:g} 秒）") from e
         except aiohttp.ClientError as e:
-            raise LLMError(f"网络请求失败：{e}") from e
+            raise LLMError("网络请求失败，请检查接口地址和网络连接") from e
 
     loop = asyncio.get_running_loop()
     try:
@@ -143,7 +142,7 @@ async def _post_json(
     except (TimeoutError, socket.timeout) as e:
         raise LLMError(f"请求超时（{timeout:g} 秒）") from e
     except Exception as e:
-        raise LLMError(f"网络请求失败：{e}") from e
+        raise LLMError("网络请求失败，请检查接口地址和网络连接") from e
 
 
 def _clean_content(text: str) -> str:
@@ -192,6 +191,11 @@ async def chat_completion(
         payload["max_tokens"] = int(tokens)
 
     url = _endpoint()
+    # 此扩展参数只发给 DeepSeek 官方接口，避免破坏其他兼容服务。
+    if urlsplit(url).hostname == "api.deepseek.com":
+        payload["thinking"] = {
+            "type": "enabled" if config.batarot_llm_thinking else "disabled"
+        }
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
@@ -200,28 +204,40 @@ async def chat_completion(
     status, raw = await _post_json(url, payload, headers)
 
     if status != 200:
-        logger.debug(f"batarot: LLM 接口返回 {status}: {raw[:500]}")
-        raise LLMError(f"接口返回 {status}：{raw.strip()[:120]}")
+        # 服务商报错可能回显密钥或用户问题，不向群聊或日志透传正文。
+        reason = {
+            400: "请求参数不受支持，请检查模型和参数配置",
+            401: "接口鉴权失败，请管理员检查 API Key",
+            402: "接口余额不足，请管理员检查账户额度",
+            403: "接口访问被拒绝，请管理员检查权限",
+            404: "接口或模型不存在，请管理员检查地址和模型名",
+            429: "接口请求过于频繁或额度受限，请稍后再试",
+        }.get(status, "模型服务暂时不可用，请稍后再试")
+        raise LLMError(f"{reason}（HTTP {status}）")
 
     try:
         data = json.loads(raw)
     except json.JSONDecodeError as e:
-        logger.debug(f"batarot: LLM 接口返回非 JSON 内容: {raw[:500]}")
         raise LLMError("接口返回内容无法解析") from e
 
+    if not isinstance(data, dict):
+        raise LLMError("接口返回格式不正确")
+    if data.get("error"):
+        raise LLMError("模型服务返回错误，请管理员检查接口配置与账户状态")
     choices = data.get("choices") or []
     if not choices:
-        error = data.get("error")
-        if isinstance(error, dict) and error.get("message"):
-            raise LLMError(str(error["message"])[:120])
-        logger.debug(f"batarot: LLM 接口未返回 choices: {raw[:500]}")
         raise LLMError("接口未返回解读内容")
 
+    if not isinstance(choices, list) or not isinstance(choices[0], dict):
+        raise LLMError("接口返回格式不正确")
     message = choices[0].get("message") or {}
+    if not isinstance(message, dict):
+        raise LLMError("接口返回格式不正确")
     content = message.get("content")
     if isinstance(content, list):  # 少数网关返回分段内容
         content = "".join(
-            part.get("text", "") for part in content if isinstance(part, dict)
+            part["text"] for part in content
+            if isinstance(part, dict) and isinstance(part.get("text"), str)
         )
     if not isinstance(content, str) or not content.strip():
         raise LLMError("接口返回的解读内容为空")

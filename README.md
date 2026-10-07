@@ -60,7 +60,7 @@ _🔮 一个可以进行测运势，魔法占卜与解读，并支持大模型�
 | --- | --- |
 | `nonebot2 >= 2.1.1` | 插件运行环境 |
 | `nonebot-plugin-send-anything-anywhere`（saa） | **必需前置**，插件加载时会 `require("nonebot_plugin_saa")`，没装会直接加载失败 |
-| `pydantic-settings` | pydantic v2 环境下读取配置用，已写入插件依赖，安装插件时会自动带上 |
+| `pydantic >= 1.10.13, < 3` | 支持 Pydantic 1/2，配置由 NoneBot 统一读取 |
 
 <details>
 <summary>使用 nb-cli 安装（推荐）</summary>
@@ -129,13 +129,9 @@ plugins = ["nonebot_plugin_batarot"]
 
 > 如果你是把插件源码直接放进 bot 的本地插件目录（即 `pyproject.toml` 里 `plugin_dirs` 指向的目录），nonebot 会自动加载它，**不需要**再手动注册，但该目录必须在 bot 项目目录内（nonebot 会解析真实路径，放在项目外的软链接/联接会报 `ValueError` 导致启动失败）。
 
-### 关于 pydantic / pydantic-settings
+### 关于 Pydantic 兼容性
 
-插件通过 `pydantic-settings` 读取配置，它已经写在插件依赖里，`pip install` / `nb plugin install` 会自动安装。如果你的环境里缺失它，手动补装即可：
-
-    pip install pydantic-settings
-
-插件代码里**不需要**修改任何 import，直接安装依赖后重启机器人即可。
+本插件支持 Pydantic 1/2，不要求为了 AI 功能升级到 Pydantic 2，也不直接依赖 `pydantic-settings`。配置只从 NoneBot 已加载的全局配置中读取，不自行读取 `.env.prod`。其他插件的版本约束仍需由你的机器人环境满足。
 
 ## ⚙️ 配置
 
@@ -152,14 +148,15 @@ FORWARD_MODE=false
 
 ### 大模型（AI 解读）配置
 
-开启后，`ba塔罗牌`、`ba占卜`、`ba运势`、`ba塔罗牌解读` 会在发送本地结果后，**再追加一条大模型生成的解读消息**；关闭时插件行为与本功能加入前完全一致。
+开启后，`ba塔罗牌`、`ba占卜`、`ba运势`、`ba塔罗牌解读` 会在发送本地结果后，**再追加一条大模型生成的解读消息**；关闭时不调用模型接口，不产生 AI 解读消息。
 
 | 配置项 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `BATAROT_LLM_ENABLED` | bool | `false` | **总开关**，是否开启大模型辅助解读（写 `true` / `True` / `1` 都可以） |
 | `BATAROT_LLM_API_BASE` | str | `https://api.deepseek.com/v1` | **接口地址**，OpenAI 兼容，写到 `/v1` 即可，插件会自动补 `/chat/completions` |
 | `BATAROT_LLM_API_KEY` | str | 空 | **接口密钥**，形如 `sk-xxxx`，必填 |
-| `BATAROT_LLM_MODEL` | str | `deepseek-chat` | 模型名称 |
+| `BATAROT_LLM_MODEL` | str | `deepseek-flash` | 模型名称，须与服务商当前提供的模型对应 |
+| `BATAROT_LLM_THINKING` | bool | `false` | 仅 DeepSeek 官方接口：是否开启思考模式，短篇解读默认关闭 |
 | `BATAROT_LLM_SYSTEM_PROMPT` | str | 空 | 自定义占卜师人设，留空使用内置人设 |
 | `BATAROT_LLM_TEMPERATURE` | float | `0.9` | 采样温度，越大越发散 |
 | `BATAROT_LLM_MAX_TOKENS` | int | `800` | 单次解读最大长度，`0` 表示不发送该参数 |
@@ -172,7 +169,7 @@ FORWARD_MODE=false
 BATAROT_LLM_ENABLED=true
 BATAROT_LLM_API_BASE=https://api.deepseek.com/v1
 BATAROT_LLM_API_KEY=sk-你的密钥
-BATAROT_LLM_MODEL=deepseek-chat
+BATAROT_LLM_MODEL=deepseek-flash
 ```
 
 常见服务商的 `BATAROT_LLM_API_BASE`：
@@ -191,6 +188,8 @@ BATAROT_LLM_MODEL=deepseek-chat
 >
 > 该功能无需额外安装依赖：请求优先使用插件已声明的 `aiohttp`，如果运行环境里没有 `aiohttp`，会自动回退到 Python 标准库，不会因为缺少 HTTP 库导致插件加载失败。
 
+> DeepSeek 的旧模型名 `deepseek-chat` / `deepseek-reasoner` 已列入官方停用公告。此处按当前文档使用 `deepseek-flash`，并默认关闭思考模式。参见 [模型文档](https://api-docs.deepseek.com/quick_start/pricing/) 和 [思考模式](https://api-docs.deepseek.com/guides/thinking_mode/)。使用本地 Ollama 时，密钥可填占位值 `ollama`，模型名填写你已下载的模型。云接口消耗部署者自己的账户额度，插件不提供免费 Key。
+
 ### 自定义占卜师人设（可选）
 
 `BATAROT_LLM_SYSTEM_PROMPT` 可以整体替换内置人设，注意**只能写在一行内**：
@@ -204,7 +203,7 @@ BATAROT_LLM_SYSTEM_PROMPT=你是《碧蓝档案》里阿罗娜风格的塔罗牌
 - AI 解读是**单独一条消息**，不会和原本的牌面图片挤在一起；本地占卜结果永远先发出，接口慢也不会影响它
 - 提示词里会带上牌名、正逆位、牌阵位置、牌义，以及你在指令后追加的问题
 - 同一用户连续使用受 `BATAROT_LLM_COOLDOWN` 限制，冷却中只回复一句提示，不会消耗 tokens
-- 接口超时、401、余额不足、网络异常等情况只回复一句简短提示，并在机器人日志里记录详细原因，本地占卜流程不受影响
+- 接口超时、401、余额不足、网络异常等情况只回复固定分类提示；日志记录相同的安全提示或异常类型，不记录服务商原始报错正文、密钥或用户问题
 - AI 解读由大模型生成，仅作娱乐与自我反思的参考，不构成医疗、法律、投资建议；解读会消耗你的接口额度
 
 ## 🎉 使用
@@ -242,13 +241,9 @@ BATAROT_LLM_SYSTEM_PROMPT=你是《碧蓝档案》里阿罗娜风格的塔罗牌
 
      然后查看你的 pyproject 文件确保 nonebot_plugin_saa（nonebot-plugin-send-anything-anywhere）被正确写入并加载
 
-- Q3：关于 pydantic / pydantic-settings
+- Q3：关于 Pydantic 版本
 
-  A3:插件依赖 pydantic v2 + pydantic-settings，安装插件时会自动带上，不需要手动改 config.py。
-
-     如果启动时报 No module named 'pydantic_settings'，在机器人虚拟环境里补装即可：
-
-         pip install pydantic-settings
+  A3:本插件兼容 Pydantic 1/2，无需手动修改 config.py，也无需为本插件单独安装 pydantic-settings。
 
 - Q4:我还有其他问题/报错，没有出现在上面，我也不知道该如何解决.
 
@@ -264,8 +259,8 @@ BATAROT_LLM_SYSTEM_PROMPT=你是《碧蓝档案》里阿罗娜风格的塔罗牌
 
     1. `.env` 里写了 `BATAROT_LLM_ENABLED=true`（写 `True`、`1` 也可以），并且**重启了机器人**；
     2. `BATAROT_LLM_API_KEY` 已填写且没有多余空格；
-    3. `BATAROT_LLM_API_BASE` 与 `BATAROT_LLM_MODEL` 是否属于同一家服务商（例如 DeepSeek 的 key 配 DeepSeek 的地址与 `deepseek-chat`）；
-    4. 提示里会带上具体原因（如 `接口返回 401`、`请求超时`、`网络请求失败`），按提示排查网络或余额问题，机器人日志里也有更详细的记录；
+    3. `BATAROT_LLM_API_BASE` 与 `BATAROT_LLM_MODEL` 是否属于同一家服务商（例如 DeepSeek 的 key 配 DeepSeek 的地址与 `deepseek-flash`）；
+    4. 根据安全分类提示（如鉴权失败、余额不足、超时）检查配置或服务商控制台；插件不透传接口原始报错；
     5. 提示「AI 解读冷却中」是正常现象，等待提示的秒数后再试即可，也可把 `BATAROT_LLM_COOLDOWN` 设为 `0` 关闭限制。
 
 - Q6:输入 `ba塔罗牌` 没反应，但输入 `/ba塔罗牌` 有反应？
@@ -308,6 +303,10 @@ EMAIL：1209228678@qq.com
 
 ### 0.3.0
 
+- 修复通用命令参数绑定 OneBot v11 消息类型的问题；`ba占卜` 原有的转发实现仍仅支持 OneBot v11
+- 配置只读取 NoneBot 当前环境，支持 Pydantic 1/2；API 报错不再透传原文
+- 牌阵一次选择一套位置并按牌序对应；维持原有抽牌数量，时间之流牌阵使用过去、现在、未来三个位置，未实现的额外切牌位置不参与解读
+- 更新 DeepSeek 默认模型及示例，并为官方接口增加思考模式开关
 - 新增大模型（AI）辅助占卜：在 `.env` 中配置 `BATAROT_LLM_ENABLED` / `BATAROT_LLM_API_BASE` / `BATAROT_LLM_API_KEY` 等即可开启，兼容 OpenAI 风格的 `/chat/completions` 接口（DeepSeek、OpenAI、Kimi、智谱、通义、SiliconFlow、本地 Ollama 等）
 - `ba塔罗牌`、`ba占卜`、`ba运势`、`ba塔罗牌解读` 均可在指令后追加自己的问题，AI 解读会结合问题作答
 - 新增同一用户 AI 解读冷却时间、超时时间、生成长度与占卜师人设等可选项，接口异常时只发送简短提示，不影响本地占卜流程

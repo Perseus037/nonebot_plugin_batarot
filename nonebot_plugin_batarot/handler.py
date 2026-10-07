@@ -1,8 +1,8 @@
 import random
 import time
 
-from nonebot.adapters import Event
-from nonebot.adapters.onebot.v11 import Bot, Message, MessageEvent, MessageSegment, GroupMessageEvent
+from nonebot.adapters import Event, Message
+from nonebot.adapters.onebot.v11 import Bot, Message as OneBotMessage, MessageEvent, MessageSegment, GroupMessageEvent
 from nonebot.internal.adapter import Bot as InternalBot
 from nonebot.params import CommandArg
 from nonebot.plugin import on_command
@@ -72,7 +72,8 @@ async def _request_ai_text(event: Event, prompt: str) -> str:
         logger.warning(f"batarot: AI 解读失败：{e}")
         return f"🔮 AI 解读暂时不可用（{e}）"
     except Exception as e:  # pragma: no cover - 兜底，避免影响正常占卜流程
-        logger.exception(f"batarot: AI 解读出现未知错误：{e}")
+        # 异常正文、堆栈局部变量可能包含 Key 或请求内容。
+        logger.error(f"batarot: AI 解读出现未知错误（{type(e).__name__}）")
         return "🔮 AI 解读出现未知错误，请检查机器人日志。"
 
     return f"🔮 AI 塔罗解读：\n{reading}"
@@ -138,6 +139,8 @@ async def handle_tarot_spread(bot: Bot, event: MessageEvent, args: Message = Com
     spread_info = spread_data["formations"][chosen_spread]
 
     selected_cards = random.sample(list(cards_dict.keys()), spread_info["cards_num"])
+    # 一次选定整套位置，随后按牌序逐一对应。
+    representations = random.choice(spread_info["representations"])
     nodes = []
     ai_cards = []
 
@@ -156,7 +159,7 @@ async def handle_tarot_spread(bot: Bot, event: MessageEvent, args: Message = Com
         card = cards_dict[card_key]
         card_name = card['name_cn']
         card_url = tarot_urls.get(f"tarot_{card_key}")
-        representation = random.choice(spread_info["representations"])
+        representation = representations[i]
 
         if random.random() < 0.5:
             position = "顺位"
@@ -205,7 +208,7 @@ async def handle_tarot_spread(bot: Bot, event: MessageEvent, args: Message = Com
         # 私聊逐条发送
         # 注意：节点内容可能是 str，也可能是 str 与图片消息段拼接后的 Message 对象，
         # 直接 append 会抛出 ValueError，这里统一用 += 拼接。
-        combined_message = Message()
+        combined_message = OneBotMessage()
         for node in nodes:
             combined_message += node['data']['content']
 

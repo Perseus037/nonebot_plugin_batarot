@@ -11,21 +11,13 @@ from __future__ import annotations
 
 from typing import Any
 
-from pydantic import field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import BaseModel, validator
 
-from nonebot.log import logger
+from nonebot import get_driver
 
 
-class Config(BaseSettings):
+class Config(BaseModel):
     """插件配置。"""
-
-    model_config = SettingsConfigDict(
-        env_file=(".env", ".env.prod"),
-        env_file_encoding="utf-8",
-        extra="ignore",
-        case_sensitive=False,
-    )
 
     forward_mode: bool = False
     """牌阵占卜是否以长消息形式发出，默认为否（合并转发）。"""
@@ -34,7 +26,7 @@ class Config(BaseSettings):
     # 大模型（AI 解读）配置
     # ------------------------------------------------------------------
     batarot_llm_enabled: bool = False
-    """是否开启大模型辅助解读。默认关闭，关闭时插件行为与旧版本完全一致。"""
+    """是否开启大模型辅助解读。默认关闭，关闭时不请求模型接口。"""
 
     batarot_llm_api_base: str = "https://api.deepseek.com/v1"
     """大模型接口地址（OpenAI 兼容），可只写到 ``/v1``，插件会自动补 ``/chat/completions``。"""
@@ -42,8 +34,11 @@ class Config(BaseSettings):
     batarot_llm_api_key: str = ""
     """大模型接口密钥，形如 ``sk-xxxx``。"""
 
-    batarot_llm_model: str = "deepseek-chat"
-    """使用的模型名称，例如 ``deepseek-chat`` / ``gpt-4o-mini`` / ``qwen-plus``。"""
+    batarot_llm_model: str = "deepseek-flash"
+    """使用的模型名称，必须与服务商当前提供的模型对应。"""
+
+    batarot_llm_thinking: bool = False
+    """DeepSeek 官方接口的思考模式，短篇解读默认关闭；其他服务商不发送此参数。"""
 
     batarot_llm_system_prompt: str = ""
     """自定义占卜师人设（system 提示词），留空则使用插件内置人设。"""
@@ -60,14 +55,13 @@ class Config(BaseSettings):
     batarot_llm_cooldown: int = 10
     """同一用户两次 AI 解读的最小间隔（秒），设为 0 表示不限制。"""
 
-    @field_validator(
+    @validator(
         "batarot_llm_api_base",
         "batarot_llm_api_key",
         "batarot_llm_model",
         "batarot_llm_system_prompt",
-        mode="before",
+        pre=True,
     )
-    @classmethod
     def _coerce_to_str(cls, value: Any) -> Any:
         """兼容 .env 中纯数字等被 json 解析成非字符串的取值。"""
         if value is None:
@@ -80,23 +74,13 @@ class Config(BaseSettings):
 
 
 def _load_config() -> Config:
-    """优先从 nonebot 全局配置读取，失败时回退到环境变量 / dotenv 文件。"""
-    try:
-        from nonebot import get_driver, get_plugin_config
-    except ImportError:  # pragma: no cover - 理论上不会发生
-        return Config()
-
-    try:
-        get_driver()
-    except Exception:
-        # 脱离 nonebot 运行时（例如单独导入做测试）直接读取环境变量
-        return Config()
-
-    try:
-        return get_plugin_config(Config)
-    except Exception as e:  # pragma: no cover - 配置异常时保证插件仍可加载
-        logger.warning(f"batarot: 读取 nonebot 配置失败，已回退到环境变量：{e}")
-        return Config()
+    """只读取 NoneBot 已选择的环境，兼容 NoneBot 2.1.1 和 Pydantic 1/2。"""
+    global_config = get_driver().config
+    if hasattr(global_config, "model_dump"):
+        values = global_config.model_dump()
+    else:
+        values = global_config.dict()
+    return Config(**values)
 
 
 config = _load_config()
