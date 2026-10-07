@@ -3,7 +3,7 @@
 
 # nonebot-plugin-batarot
 
-_🔮 一个可以进行测运势，魔法占卜与解读的碧蓝档案塔罗牌nonebot2插件🔮 _
+_🔮 一个可以进行测运势，魔法占卜与解读，并支持大模型辅助解读的碧蓝档案塔罗牌nonebot2插件🔮 _
 
 <img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="python">
 <a href="https://pdm.fming.dev">
@@ -16,7 +16,7 @@ _🔮 一个可以进行测运势，魔法占卜与解读的碧蓝档案塔罗�
 <br />
 
 <a href="./LICENSE">
-  <img src="https://img.shields.io/github/license/lgc-NB2Dev/nonebot-plugin-uma.svg" alt="license">
+  <img src="https://img.shields.io/github/license/Perseus037/nonebot_plugin_batarot.svg" alt="license">
 </a>
 <a href="https://pypi.python.org/pypi/nonebot-plugin-batarot">
   <img src="https://img.shields.io/pypi/v/nonebot-plugin-batarot.svg" alt="pypi">
@@ -43,19 +43,29 @@ _🔮 一个可以进行测运势，魔法占卜与解读的碧蓝档案塔罗�
 
 ## 📖 介绍
 
-一个可以进行测运势，魔法占卜与解读的碧蓝档案塔罗牌nonebot2插件
+一个可以进行测运势，魔法占卜与解读的碧蓝档案塔罗牌nonebot2插件。
 
-从本地读取图片并发送，使用nonebot_plugin_send_anything_anywhere已实现多适配器支持(onebot.v11, onebot.v12, qqguild，kaiheila, telegram, feishu, red)
+- 从本地读取图片并发送，使用 nonebot_plugin_send_anything_anywhere 实现多适配器支持（onebot.v11, onebot.v12, qqguild, kaiheila, telegram, feishu, red）
+- 目前提供 4 个指令：`ba塔罗牌`、`ba运势`、`ba占卜`、`ba塔罗牌解读`，每个指令都可以在末尾追加自己的问题
+- 0.3.0 起支持**大模型（AI）辅助占卜**：在 `.env` 里配置接口地址与密钥后，原指令会在本地结果之后追加一段由大模型生成的解读，配置方法见下方「配置」章节，可直接复制 [.env.example](./.env.example)
+- 0.3.0 同时修复了 `ba占卜` 私聊发送失败、`ba塔罗牌解读` 参数解析报错两个问题，详见「更新日志」
 
-目前暂有4个功能：ba塔罗牌，ba运势，ba占卜和ba塔罗牌解读，使用详见下方指令
-
-有问题请先自行去Q/A查看，请下载最新的发版！！！
+有问题请先自行去 Q/A 查看，请下载最新的发版！！！
 
 ## 💿 安装
 
-</details>
+### 前置条件
+
+| 依赖 | 说明 |
+| --- | --- |
+| `nonebot2 >= 2.1.1` | 插件运行环境 |
+| `nonebot-plugin-send-anything-anywhere`（saa） | **必需前置**，插件加载时会 `require("nonebot_plugin_saa")`，没装会直接加载失败 |
+| `pydantic >= 1.10.13, < 3` | 支持 Pydantic 1/2，配置由 NoneBot 统一读取 |
+
+<details>
 <summary>使用 nb-cli 安装（推荐）</summary>
-在 nonebot2 项目的根目录下打开命令行, 输入以下指令即可安装
+
+在 nonebot2 项目的根目录下打开命令行，输入以下指令即可安装
 
     nb plugin install nonebot-plugin-batarot
 
@@ -63,96 +73,209 @@ _🔮 一个可以进行测运势，魔法占卜与解读的碧蓝档案塔罗�
 
 <details>
 <summary>使用包管理器安装</summary>
-在 nonebot2 项目的插件目录下, 打开命令行, 根据你使用的包管理器, 输入相应的安装命令
+
+在 nonebot2 项目的根目录下打开命令行，根据你使用的包管理器输入相应命令
 
 <details>
 <summary>pip</summary>
 
-    pip install nonebot-plugin-batarot[all]
+    pip install nonebot-plugin-batarot
 
 </details>
 <details>
 <summary>pdm</summary>
 
-    pdm add nonebot-plugin-batarot[all]
+    pdm add nonebot-plugin-batarot
 
 </details>
 <details>
 <summary>poetry</summary>
 
-    poetry add nonebot-plugin-batarot[all]
+    poetry add nonebot-plugin-batarot
 
 </details>
 <details>
 <summary>conda</summary>
 
-    conda install nonebot-plugin-batarot[all]
+conda 上没有这个包，请在 conda 虚拟环境里用 pip 安装
+
+    pip install nonebot-plugin-batarot
 
 </details>
 
-打开 nonebot2 项目根目录下的 `pyproject.toml` 文件, 在 `[tool.nonebot]` 部分追加写入
-
-    plugins = ["nonebot_plugin_batarot"]
-
 </details>
 
-<br>
-<summary>如果你使用pydantic2…<summary>
-请在命令行中输入以下指令
-  
-    pip install pydantic_settings
-然后，打开插件文件夹内的 config.py 文件(形如 ...\Nonebot\\.venv\Lib\site-packages\nonebot_plugin_batarot\config.py )，按照提示修改并保存。
+### 安装前置插件 saa
+
+若上面安装插件时没有自动带上 saa，请在机器人所在虚拟环境中手动安装
+
+    pip install nonebot-plugin-send-anything-anywhere
+
+### 安装后注册插件
+
+在 nonebot2 项目根目录的 `pyproject.toml` 中写入。nonebot 2.5 及以上使用新的 `[tool.nonebot.plugins]` 表：
+
+```toml
+[tool.nonebot.plugins]
+nonebot-plugin-batarot = ["nonebot_plugin_batarot"]
+```
+
+较早的 nonebot / nb-cli 版本使用旧写法，写在 `[tool.nonebot]` 下：
+
+```toml
+[tool.nonebot]
+plugins = ["nonebot_plugin_batarot"]
+```
+
+> 如果你是把插件源码直接放进 bot 的本地插件目录（即 `pyproject.toml` 里 `plugin_dirs` 指向的目录），nonebot 会自动加载它，**不需要**再手动注册，但该目录必须在 bot 项目目录内（nonebot 会解析真实路径，放在项目外的软链接/联接会报 `ValueError` 导致启动失败）。
+
+### 关于 Pydantic 兼容性
+
+本插件支持 Pydantic 1/2，不要求为了 AI 功能升级到 Pydantic 2，也不直接依赖 `pydantic-settings`。配置只从 NoneBot 已加载的全局配置中读取，不自行读取 `.env.prod`。其他插件的版本约束仍需由你的机器人环境满足。
 
 ## ⚙️ 配置
 
-forward_mode: bool = False
-牌阵占卜是否以长消息形式发出，默认为否（合并转发），建议不更改。
+所有配置项都写在 **nonebot2 项目根目录**的 `.env`（或 `.env.prod` / `.env.{ENVIRONMENT}`）文件里，变量名大小写不敏感，推荐全大写。插件仓库根目录提供了带注释的示例文件 [.env.example](./.env.example)，可按需复制。
+
+### 原有配置
+
+```dotenv
+# 牌阵占卜是否以长消息形式发出，默认为否（合并转发），建议不更改
+FORWARD_MODE=false
+```
+
+> 说明：`FORWARD_MODE` 是早期预留的开关，**当前版本代码里尚未实际生效** —— `ba占卜` 在群聊固定使用合并转发，私聊则合并成一条消息发送。保留该配置项仅为兼容旧配置。
+
+### 大模型（AI 解读）配置
+
+开启后，`ba塔罗牌`、`ba占卜`、`ba运势`、`ba塔罗牌解读` 会在发送本地结果后，**再追加一条大模型生成的解读消息**；关闭时不调用模型接口，不产生 AI 解读消息。
+
+| 配置项 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `BATAROT_LLM_ENABLED` | bool | `false` | **总开关**，是否开启大模型辅助解读（写 `true` / `True` / `1` 都可以） |
+| `BATAROT_LLM_API_BASE` | str | `https://api.deepseek.com/v1` | **接口地址**，OpenAI 兼容，写到 `/v1` 即可，插件会自动补 `/chat/completions` |
+| `BATAROT_LLM_API_KEY` | str | 空 | **接口密钥**，形如 `sk-xxxx`，必填 |
+| `BATAROT_LLM_MODEL` | str | `deepseek-flash` | 模型名称，须与服务商当前提供的模型对应 |
+| `BATAROT_LLM_THINKING` | bool | `false` | 仅 DeepSeek 官方接口：是否开启思考模式，短篇解读默认关闭 |
+| `BATAROT_LLM_SYSTEM_PROMPT` | str | 空 | 自定义占卜师人设，留空使用内置人设 |
+| `BATAROT_LLM_TEMPERATURE` | float | `0.9` | 采样温度，越大越发散 |
+| `BATAROT_LLM_MAX_TOKENS` | int | `800` | 单次解读最大长度，`0` 表示不发送该参数 |
+| `BATAROT_LLM_TIMEOUT` | float | `60` | 单次请求超时（秒） |
+| `BATAROT_LLM_COOLDOWN` | int | `10` | 同一用户两次 AI 解读的最小间隔（秒），`0` 表示不限制 |
+
+最小可用配置示例（复制到 bot 根目录的 `.env` 并重启）：
+
+```dotenv
+BATAROT_LLM_ENABLED=true
+BATAROT_LLM_API_BASE=https://api.deepseek.com/v1
+BATAROT_LLM_API_KEY=sk-你的密钥
+BATAROT_LLM_MODEL=deepseek-flash
+```
+
+常见服务商的 `BATAROT_LLM_API_BASE`：
+
+| 服务商 | 接口地址 |
+| --- | --- |
+| DeepSeek | `https://api.deepseek.com/v1` |
+| OpenAI | `https://api.openai.com/v1` |
+| 月之暗面 Kimi | `https://api.moonshot.cn/v1` |
+| 智谱 GLM | `https://open.bigmodel.cn/api/paas/v4` |
+| 阿里通义千问 | `https://dashscope.aliyuncs.com/compatible-mode/v1` |
+| SiliconFlow | `https://api.siliconflow.cn/v1` |
+| 本地 Ollama | `http://127.0.0.1:11434/v1` |
+
+> 只要服务商兼容 OpenAI 的 `/chat/completions` 协议即可直接填写使用；接口路径特殊的网关，也可以把完整地址（形如 `https://xxx/v1/chat/completions`）直接写进 `BATAROT_LLM_API_BASE`。
+>
+> 该功能无需额外安装依赖：请求优先使用插件已声明的 `aiohttp`，如果运行环境里没有 `aiohttp`，会自动回退到 Python 标准库，不会因为缺少 HTTP 库导致插件加载失败。
+
+> DeepSeek 的旧模型名 `deepseek-chat` / `deepseek-reasoner` 已列入官方停用公告。此处按当前文档使用 `deepseek-flash`，并默认关闭思考模式。参见 [模型文档](https://api-docs.deepseek.com/quick_start/pricing/) 和 [思考模式](https://api-docs.deepseek.com/guides/thinking_mode/)。使用本地 Ollama 时，密钥可填占位值 `ollama`，模型名填写你已下载的模型。云接口消耗部署者自己的账户额度，插件不提供免费 Key。
+
+### 自定义占卜师人设（可选）
+
+`BATAROT_LLM_SYSTEM_PROMPT` 可以整体替换内置人设，注意**只能写在一行内**：
+
+```dotenv
+BATAROT_LLM_SYSTEM_PROMPT=你是《碧蓝档案》里阿罗娜风格的塔罗牌占卜师，语气活泼亲切，每次解读控制在 150 字以内，不使用任何 Markdown 标记。
+```
+
+### AI 解读的行为说明
+
+- AI 解读是**单独一条消息**，不会和原本的牌面图片挤在一起；本地占卜结果永远先发出，接口慢也不会影响它
+- 提示词里会带上牌名、正逆位、牌阵位置、牌义，以及你在指令后追加的问题
+- 同一用户连续使用受 `BATAROT_LLM_COOLDOWN` 限制，冷却中只回复一句提示，不会消耗 tokens
+- 接口超时、401、余额不足、网络异常等情况只回复固定分类提示；日志记录相同的安全提示或异常类型，不记录服务商原始报错正文、密钥或用户问题
+- AI 解读由大模型生成，仅作娱乐与自我反思的参考，不构成医疗、法律、投资建议；解读会消耗你的接口额度
 
 ## 🎉 使用
 
-现有指令列表：
+| 指令 | 别名 | 说明 |
+| --- | --- | --- |
+| `ba塔罗牌` | `batarot`、`tarot`、`塔罗牌` | 随机发送一张ba塔罗牌以及正逆位含义 |
+| `ba占卜` | `divination`、`占卜` | 随机抽取一个塔罗牌牌阵占卜，群聊以合并转发发送，私聊合并成一条消息发送 |
+| `ba运势` | `fortune`、`运势` | 随机发送一张ba塔罗牌以及对应的运势分数和运势评价 |
+| `ba塔罗牌解读 [牌名或编号] [问题]` | `reading`、`塔罗牌解读` | 发送一张ba塔罗牌以及来自塔罗牌原画师大人 shi0n_krbn 的解读；不带参数时随机选一张 |
 
-ba塔罗牌：随机发送一张ba塔罗牌以及正逆位含义
+命令前缀：nonebot 默认 `COMMAND_START={"/"}`，此时实际输入形如 `/ba塔罗牌`；如果你的 bot 把 `COMMAND_START` 配置成 `[""]`，就可以直接输入 `ba塔罗牌`。
 
-ba占卜：默认以合并转发的方式随机发送一个塔罗牌牌阵进行占卜（私聊时发送的是消息段）。
+追加问题：4 个指令都支持在末尾写自己的问题，例如
 
-ba运势：随机发送一张ba塔罗牌以及对应的运势分数和对应运势评价
+    /ba塔罗牌 我最近的工作会顺利吗
+    /ba塔罗牌解读 愚者 这段感情该怎么处理
+    /ba占卜 我该不该换一个城市生活
 
-ba塔罗牌解读：发送一张ba塔罗牌以及来自塔罗牌原画师大人shi0n_krbn的解读。
+开启 AI 解读后，大模型会结合抽到的牌与你写的问题作答（`ba塔罗牌解读` 还支持英文牌名，如 `/ba塔罗牌解读 The Fool`）。
 
 ## 💡 Q/A
+
 - Q1:无法成功发送图片，输入指令后图片很久才响应，该如何解决？
 
   A1:这主要是图床的锅，使用魔法进行科学上网可以有效避免该问题。
 
      二编：已经改为从本地发送，第一次安装插件由于图片清晰度较高下载可能比较慢，建议使用魔法科学上网。
-  
 
 - Q2:出现插件无法正常加载相关报错该如何解决？
 
-  A2:请先确认你已经安装了nonebot-plugin-send-anything-anywhere，并且是最新版本。
-  
-     如果没有安装请使用pip install nonebot-plugin-send-anything-anywhere在你机器人部署的虚拟环境中安装这个前置插件
-  
-     然后查看你的pyproject文件确保nonebot_plugin_saa（nonebot-plugin-send-anything-anywhere）被正确写入并加载
-  
-- Q3：关于pydantic版本的问题
+  A2:请先确认你已经安装了 nonebot-plugin-send-anything-anywhere（saa），并且是最新版本。
 
-  A3:如果你使用的是pydantic 1.x，不用更改文件，可以直接运行。
-     如果你使用的是pydantic版本 >= 2.0 ：
-    1. 安装pydantic_settings包
-    2. 将本插件根目录下第1行import的pydantic修改为pydantic_setting
-    即可正常运行
-  
+     如果没有安装请使用 pip install nonebot-plugin-send-anything-anywhere 在你机器人部署的虚拟环境中安装这个前置插件
+
+     然后查看你的 pyproject 文件确保 nonebot_plugin_saa（nonebot-plugin-send-anything-anywhere）被正确写入并加载
+
+- Q3：关于 Pydantic 版本
+
+  A3:本插件兼容 Pydantic 1/2，无需手动修改 config.py，也无需为本插件单独安装 pydantic-settings。
+
 - Q4:我还有其他问题/报错，没有出现在上面，我也不知道该如何解决.
 
   A4:出现如无法加载图片，插件报错，前置插件版本冲突等问题，欢迎提issue，我会尽快解决。本插件为一时兴起写着玩的，出现解决不了的问题请自行寻找其他方案。
-     
+
      如果你想给这个插件增加新的功能/补充完善代码，欢迎提pr。
 
      关于bot的安装配置问题，请去nb官方群聊进行咨询，我不负责也没有义务解答。
 
+- Q5:AI 解读没有出现 / 提示「AI 解读暂时不可用」，怎么办？
 
+  A5:请按顺序检查：
+
+    1. `.env` 里写了 `BATAROT_LLM_ENABLED=true`（写 `True`、`1` 也可以），并且**重启了机器人**；
+    2. `BATAROT_LLM_API_KEY` 已填写且没有多余空格；
+    3. `BATAROT_LLM_API_BASE` 与 `BATAROT_LLM_MODEL` 是否属于同一家服务商（例如 DeepSeek 的 key 配 DeepSeek 的地址与 `deepseek-flash`）；
+    4. 根据安全分类提示（如鉴权失败、余额不足、超时）检查配置或服务商控制台；插件不透传接口原始报错；
+    5. 提示「AI 解读冷却中」是正常现象，等待提示的秒数后再试即可，也可把 `BATAROT_LLM_COOLDOWN` 设为 `0` 关闭限制。
+
+- Q6:输入 `ba塔罗牌` 没反应，但输入 `/ba塔罗牌` 有反应？
+
+  A6:这是 nonebot 的命令前缀设置（`COMMAND_START`）导致的，默认必须带 `/`。
+
+     想让机器人不带前缀也能识别，在 `.env` 里加一行 `COMMAND_START=[""]` 即可（把空字符串也加入允许的前缀列表，
+     注意不要写成 `COMMAND_START=[]`，那样命令会完全无法触发）。
+
+- Q7:AI 解读会花钱吗？牌面信息会被上传吗？
+
+  A7:会消耗你自己配置的那家服务商的额度，每次大约几百 tokens；`BATAROT_LLM_COOLDOWN` 可以限制每人调用频率。
+
+     请求内容只包含牌名、正逆位、牌义（`ba塔罗牌解读` 会额外带上原画师的解读文本）以及你写的问题，
+     发送到你在 `BATAROT_LLM_API_BASE` 里填写的那个接口，插件本身不收集也不中转任何数据。
 
 ## 📞 制作者
 
@@ -177,6 +300,20 @@ EMAIL：1209228678@qq.com
 -  [nonebot-plugin-send-anything-anywhere](https://github.com/MountainDash/nonebot-plugin-send-anything-anywhere) 处理不同 adapter 消息的适配和发送
 
 ## 📝 更新日志
+
+### 0.3.0
+
+- 修复通用命令参数绑定 OneBot v11 消息类型的问题；`ba占卜` 原有的转发实现仍仅支持 OneBot v11
+- 配置只读取 NoneBot 当前环境，支持 Pydantic 1/2；API 报错不再透传原文
+- 牌阵一次选择一套位置并按牌序对应；维持原有抽牌数量，时间之流牌阵使用过去、现在、未来三个位置，未实现的额外切牌位置不参与解读
+- 更新 DeepSeek 默认模型及示例，并为官方接口增加思考模式开关
+- 新增大模型（AI）辅助占卜：在 `.env` 中配置 `BATAROT_LLM_ENABLED` / `BATAROT_LLM_API_BASE` / `BATAROT_LLM_API_KEY` 等即可开启，兼容 OpenAI 风格的 `/chat/completions` 接口（DeepSeek、OpenAI、Kimi、智谱、通义、SiliconFlow、本地 Ollama 等）
+- `ba塔罗牌`、`ba占卜`、`ba运势`、`ba塔罗牌解读` 均可在指令后追加自己的问题，AI 解读会结合问题作答
+- 新增同一用户 AI 解读冷却时间、超时时间、生成长度与占卜师人设等可选项，接口异常时只发送简短提示，不影响本地占卜流程
+- 配置项改为通过 nonebot 全局配置读取，`.env` / `.env.prod` / `.env.{ENVIRONMENT}` 均可生效，并新增带注释的 `.env.example`
+- `ba塔罗牌解读` 的牌名匹配改用参数解析，修复了省略空格的写法会导致报错的问题，并支持英文牌名
+- 修复 `ba占卜` 在私聊时拼接图片消息报 `ValueError: Unexpected type` 导致占卜失败的问题
+
 ### 0.2.2.post1-post4
 - 将图片发送改为从本地读取，优化牌阵指令部分代码
 - 优化关于合并转发部分的代码逻辑
@@ -204,3 +341,4 @@ EMAIL：1209228678@qq.com
 - 修复各种bug
 - 重构代码，对原有代码进行模块化拆分便于维护
 
+</div>

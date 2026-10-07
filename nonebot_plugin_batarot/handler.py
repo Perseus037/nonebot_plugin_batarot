@@ -1,18 +1,96 @@
 import random
+import time
 
-
-from nonebot.adapters.onebot.v11 import Bot, Message, MessageEvent, MessageSegment, GroupMessageEvent
+from nonebot.adapters import Event, Message
+from nonebot.adapters.onebot.v11 import Bot, Message as OneBotMessage, MessageEvent, MessageSegment, GroupMessageEvent
 from nonebot.internal.adapter import Bot as InternalBot
+from nonebot.params import CommandArg
 from nonebot.plugin import on_command
 from nonebot_plugin_saa import Image, Text, MessageFactory, SaaTarget
 from nonebot.log import logger
 
 from .config import config
 from .commands import tarot, tarot_spread, tarot_fortune, tarot_reading
-from .utils import load_tarot_data, load_spread_data, random_tarot_card, send_image_as_base64, load_fortune_descriptions, send_image_as_bytes, rotate_image_180
+from .llm import (
+    LLMError,
+    build_fortune_prompt,
+    build_reading_prompt,
+    build_spread_prompt,
+    build_tarot_prompt,
+    generate_reading,
+)
+from .utils import (
+    load_tarot_data,
+    load_spread_data,
+    random_tarot_card,
+    match_card_key,
+    get_card_en_name,
+    send_image_as_base64,
+    load_fortune_descriptions,
+    send_image_as_bytes,
+    rotate_image_180,
+)
+
+# 记录每位用户上次调用 AI 解读的时间（用于冷却限制）
+_llm_last_used: dict = {}
+
+
+def _position_text(direction: str) -> str:
+    """把内部的正逆位标记转成展示/提示词用的文字。"""
+    return "正位" if direction == "up" else "逆位"
+
+
+async def _request_ai_text(event: Event, prompt: str) -> str:
+    """按需请求大模型解读。
+
+    - 未开启 AI 解读时返回空字符串（调用方直接跳过发送）；
+    - 冷却中或调用失败时返回一段提示文本。
+    """
+    if not config.batarot_llm_enabled:
+        return ""
+
+    user_id = event.get_user_id()
+    cooldown = max(int(config.batarot_llm_cooldown or 0), 0)
+    now = time.monotonic()
+
+    if cooldown > 0:
+        last_used = _llm_last_used.get(user_id)
+        if last_used is not None and now - last_used < cooldown:
+            remain = int(cooldown - (now - last_used)) + 1
+            return f"🔮 AI 解读冷却中，请在 {remain} 秒后再试。"
+
+        # 顺手清理过期记录，避免字典无限增长
+        if len(_llm_last_used) > 1024:
+            for key in [k for k, v in _llm_last_used.items() if now - v > 3600]:
+                _llm_last_used.pop(key, None)
+
+        _llm_last_used[user_id] = now
+
+    try:
+        reading = await generate_reading(prompt)
+    except LLMError as e:
+        logger.warning(f"batarot: AI 解读失败：{e}")
+        return f"🔮 AI 解读暂时不可用（{e}）"
+    except Exception as e:  # pragma: no cover - 兜底，避免影响正常占卜流程
+        # 异常正文、堆栈局部变量可能包含 Key 或请求内容。
+        logger.error(f"batarot: AI 解读出现未知错误（{type(e).__name__}）")
+        return "🔮 AI 解读出现未知错误，请检查机器人日志。"
+
+    return f"🔮 AI 塔罗解读：\n{reading}"
+
+
+async def _send_ai_text(text: str) -> None:
+    """把 AI 解读作为一条独立消息发出（空字符串表示未开启，直接跳过）。"""
+    if not text:
+        return
+    try:
+        await MessageFactory(Text(text)).send()
+    except Exception as e:  # pragma: no cover - 发送失败不影响主流程
+        logger.error(f"batarot: AI 解读发送失败：{e}")
+
 
 @tarot.handle()
-async def handle_tarot():
+async def handle_tarot(event: Event, args: Message = CommandArg()):
     cards_dict, tarot_urls = load_tarot_data()
     card_name, position, card_meaning, card_url = random_tarot_card(cards_dict, tarot_urls)
 
@@ -37,10 +115,23 @@ async def handle_tarot():
             reply.append(Text("图片加载失败"))
 
     await reply.send(reply=True)
+
+    # 大模型辅助解读（未开启时不会发送任何额外消息）
+    question = args.extract_plain_text().strip()
+    card_key = match_card_key(cards_dict, card_name)
+    prompt = build_tarot_prompt(
+        card_name=card_name,
+        card_en_name=get_card_en_name(cards_dict, card_key) if card_key else "",
+        position=_position_text(position),
+        meaning=card_meaning,
+        question=question,
+    )
+    await _send_ai_text(await _request_ai_text(event, prompt))
+
     await tarot.finish()
 
 @tarot_spread.handle()
-async def handle_tarot_spread(bot: Bot, event: MessageEvent):
+async def handle_tarot_spread(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     spread_data = load_spread_data()
     cards_dict, tarot_urls = load_tarot_data()
 
@@ -48,7 +139,10 @@ async def handle_tarot_spread(bot: Bot, event: MessageEvent):
     spread_info = spread_data["formations"][chosen_spread]
 
     selected_cards = random.sample(list(cards_dict.keys()), spread_info["cards_num"])
+    # 一次选定整套位置，随后按牌序逐一对应。
+    representations = random.choice(spread_info["representations"])
     nodes = []
+    ai_cards = []
 
     # 添加起始信息节点
     nodes.append({
@@ -65,7 +159,7 @@ async def handle_tarot_spread(bot: Bot, event: MessageEvent):
         card = cards_dict[card_key]
         card_name = card['name_cn']
         card_url = tarot_urls.get(f"tarot_{card_key}")
-        representation = random.choice(spread_info["representations"])
+        representation = representations[i]
 
         if random.random() < 0.5:
             position = "顺位"
@@ -92,6 +186,14 @@ async def handle_tarot_spread(bot: Bot, event: MessageEvent):
             }
         })
 
+        ai_cards.append({
+            "position": representation,
+            "name": card_name,
+            "en_name": get_card_en_name(cards_dict, card_key),
+            "direction": position,
+            "meaning": card_meaning,
+        })
+
     # 发送合并转发消息
     if isinstance(event, GroupMessageEvent):
         try:
@@ -104,18 +206,28 @@ async def handle_tarot_spread(bot: Bot, event: MessageEvent):
                 await bot.send(event, node['data']['content'])
     else:
         # 私聊逐条发送
-        combined_message = Message()
+        # 注意：节点内容可能是 str，也可能是 str 与图片消息段拼接后的 Message 对象，
+        # 直接 append 会抛出 ValueError，这里统一用 += 拼接。
+        combined_message = OneBotMessage()
         for node in nodes:
-            combined_message.append(node['data']['content'])
+            combined_message += node['data']['content']
 
         await bot.send(event, combined_message)
+
+    # 大模型辅助解读（未开启时不会发送任何额外消息）
+    prompt = build_spread_prompt(
+        spread_name=chosen_spread,
+        cards=ai_cards,
+        question=args.extract_plain_text().strip(),
+    )
+    await _send_ai_text(await _request_ai_text(event, prompt))
 
     await tarot_spread.finish()
 
 
 
 @tarot_fortune.handle()
-async def handle_daily_fortune():
+async def handle_daily_fortune(event: Event, args: Message = CommandArg()):
     cards_dict, tarot_urls = load_tarot_data()
     card_key = random.choice(list(cards_dict.keys()))
     card = cards_dict[card_key]
@@ -141,28 +253,39 @@ async def handle_daily_fortune():
             reply += "图片加载失败"
 
     await reply.send(reply=True)
+
+    # 大模型辅助解读（未开启时不会发送任何额外消息）
+    prompt = build_fortune_prompt(
+        card_name=card_name,
+        card_en_name=get_card_en_name(cards_dict, card_key),
+        score=fortune_score,
+        description=fortune_description,
+        question=args.extract_plain_text().strip(),
+    )
+    await _send_ai_text(await _request_ai_text(event, prompt))
+
     await tarot_fortune.finish()
 
 
 @tarot_reading.handle()
-async def handle_tarot_reading(event: MessageEvent):
+async def handle_tarot_reading(event: Event, args: Message = CommandArg()):
     cards_dict, tarot_urls = load_tarot_data()
 
-    user_input = str(event.get_message()).strip()
+    # 参数形如「7」「愚者」「愚者 我最近的工作怎么样」
+    arg_text = args.extract_plain_text().strip()
     specific_card_key = None
+    question = ""
 
-    if user_input == "ba塔罗牌解读":
+    if not arg_text:
         specific_card_key = random.choice(list(cards_dict.keys()))
-
-    elif user_input.startswith("ba塔罗牌解读 ") or user_input.startswith("塔罗牌解读"):
-        specific_card_input = user_input.split(" ", 1)[1].strip()
-
-        if specific_card_input.isdigit() and specific_card_input in cards_dict:
-            specific_card_key = specific_card_input
-        else:
-            specific_card_key = next(
-                (key for key, card in cards_dict.items() if card['name_cn'].lower() == specific_card_input.lower()),
-                None)
+    else:
+        specific_card_key = match_card_key(cards_dict, arg_text)
+        if specific_card_key is None:
+            # 第一个词当作牌名，剩余部分当作要占卜的问题
+            head, _, tail = arg_text.partition(" ")
+            specific_card_key = match_card_key(cards_dict, head)
+            if specific_card_key is not None:
+                question = tail.strip()
 
     if specific_card_key:
         card = cards_dict[specific_card_key]
@@ -185,4 +308,18 @@ async def handle_tarot_reading(event: MessageEvent):
         reply = MessageFactory(Text("未找到指定的塔罗牌或输入格式错误，请输入正确的卡牌编号或名称。\n"))
 
     await reply.send(reply=True)
+
+    # 大模型辅助解读（未开启时不会发送任何额外消息）
+    if specific_card_key:
+        card = cards_dict[specific_card_key]
+        prompt = build_reading_prompt(
+            card_name=card['name_cn'],
+            card_en_name=get_card_en_name(cards_dict, specific_card_key),
+            meaning_up=card['meaning']['up'],
+            meaning_down=card['meaning']['down'],
+            description="\n".join(card['description']),
+            question=question,
+        )
+        await _send_ai_text(await _request_ai_text(event, prompt))
+
     await tarot_reading.finish()
