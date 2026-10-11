@@ -31,14 +31,16 @@ __plugin_meta__ = PluginMetadata(
     supported_adapters=saa_plugin_meta.supported_adapters,
 )
 
+driver = get_driver()
+
 try:
     # 机器人关闭时释放大模型请求所用的连接池
-    get_driver().on_shutdown(llm.shutdown)
+    driver.on_shutdown(llm.shutdown)
 except Exception as e:  # pragma: no cover - 理论上不会发生
     logger.warning(f"batarot: 注册大模型连接池回收钩子失败：{e}")
 
 
-@get_driver().on_startup
+@driver.on_startup
 async def _log_settings():
     logger.info("batarot: AI={}, model={}, max_tokens={}, timeout={}, concurrency={}, cooldown={}, forward_mode={}, daily_limit={}, luck={}..{}, initial_luck={}, utc_offset={}",
                 config.batarot_llm_enabled, config.batarot_llm_model, config.batarot_llm_max_tokens,
