@@ -9,9 +9,10 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal, Optional
+from pathlib import Path
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, Field, validator
 
 from nonebot import get_driver
 
@@ -20,7 +21,14 @@ class Config(BaseModel):
     """插件配置。"""
 
     forward_mode: bool = False
-    """牌阵占卜是否以长消息形式发出，默认为否（合并转发）。"""
+    """False 使用合并转发，True 使用一条普通图文长消息。"""
+
+    batarot_data_file: Path = Path("data/batarot/state.json")
+    batarot_initial_luck: int = 10
+    batarot_luck_min: int = Field(-5, ge=-5, le=0)
+    batarot_luck_max: int = Field(5, ge=0, le=5)
+    batarot_llm_daily_limit: int = Field(3, ge=0)
+    batarot_day_utc_offset: int = Field(8, ge=-12, le=14)
 
     # ------------------------------------------------------------------
     # 大模型（AI 解读）配置
@@ -38,7 +46,15 @@ class Config(BaseModel):
     """使用的模型名称，必须与服务商当前提供的模型对应。"""
 
     batarot_llm_thinking: bool = False
-    """DeepSeek 官方接口的思考模式，短篇解读默认关闭；其他服务商不发送此参数。"""
+    """是否启用支持切换的模型的思考模式。"""
+
+    batarot_llm_thinking_provider: Literal["auto", "deepseek", "siliconflow", "none"] = "auto"
+    """auto 仅为已知支持的服务商和模型发送思考参数。"""
+
+    batarot_llm_max_concurrency: int = Field(2, ge=1, le=8)
+    batarot_llm_max_question_chars: int = Field(1000, ge=1, le=10000)
+    batarot_llm_input_price_per_million: Optional[float] = Field(None, ge=0)
+    batarot_llm_output_price_per_million: Optional[float] = Field(None, ge=0)
 
     batarot_llm_system_prompt: str = ""
     """自定义占卜师人设（system 提示词），留空则使用插件内置人设。"""
@@ -46,13 +62,13 @@ class Config(BaseModel):
     batarot_llm_temperature: float = 0.9
     """采样温度，越大越发散，建议 0.7 ~ 1.2。"""
 
-    batarot_llm_max_tokens: int = 800
+    batarot_llm_max_tokens: int = Field(800, ge=0)
     """单次解读的最大生成长度，设为 0 表示不发送该参数。"""
 
-    batarot_llm_timeout: float = 60.0
+    batarot_llm_timeout: float = Field(60.0, gt=0)
     """单次请求超时时间（秒）。"""
 
-    batarot_llm_cooldown: int = 10
+    batarot_llm_cooldown: int = Field(10, ge=0)
     """同一用户两次 AI 解读的最小间隔（秒），设为 0 表示不限制。"""
 
     @validator(

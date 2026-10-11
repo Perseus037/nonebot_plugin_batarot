@@ -13,11 +13,16 @@ Kimi、智谱、通义千问、SiliconFlow、本地 Ollama / vLLM 等只要兼�
 from __future__ import annotations
 
 import asyncio
+from contextvars import ContextVar
 import functools
 import json
 import socket
+import time
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urlsplit
+from uuid import uuid4
+
+from nonebot.log import logger
 
 try:  # aiohttp 是插件声明的依赖，但开发环境中可能没有安装
     import aiohttp
@@ -54,6 +59,8 @@ DEFAULT_SYSTEM_PROMPT = (
 
 _session: Optional["aiohttp.ClientSession"] = None
 _session_lock: Optional[asyncio.Lock] = None
+_active_requests = 0
+usage_context = ContextVar("batarot_usage_context", default="production")
 
 # 当前使用的 HTTP 实现：有 aiohttp 时优先使用，否则回退到标准库
 _backend = "aiohttp" if aiohttp is not None else "urllib"
@@ -135,10 +142,23 @@ async def _post_json(
 
     loop = asyncio.get_running_loop()
     try:
-        return await loop.run_in_executor(
+        future = loop.run_in_executor(
             None,
             functools.partial(_blocking_urllib_post, url, payload, headers, timeout),
         )
+        try:
+            return await asyncio.shield(future)
+        except asyncio.CancelledError:
+            while not future.done():
+                try:
+                    await asyncio.shield(future)
+                except asyncio.CancelledError:
+                    continue
+                except Exception:
+                    break
+            if not future.cancelled():
+                future.exception()
+            raise
     except (TimeoutError, socket.timeout) as e:
         raise LLMError(f"请求超时（{timeout:g} 秒）") from e
     except Exception as e:
@@ -159,11 +179,82 @@ def _clean_content(text: str) -> str:
     return text.strip().strip('"').strip()
 
 
+def _thinking_options(url: str, model: str) -> Dict[str, Any]:
+    provider = config.batarot_llm_thinking_provider
+    host = urlsplit(url).hostname
+    if provider == "auto":
+        if host == "api.deepseek.com":
+            provider = "deepseek"
+        elif host in {"api.siliconflow.cn", "api.siliconflow.com"}:
+            name = model.rsplit("/", 1)[-1].lower()
+            supported = name.startswith(("qwen3", "deepseek-v3.1", "deepseek-v3.2", "glm-4.5", "glm-4.6"))
+            excluded = any(word in name for word in ("instruct", "embedding", "reranker"))
+            provider = "siliconflow" if supported and not excluded else "none"
+        else:
+            provider = "none"
+    if provider == "deepseek":
+        return {"thinking": {"type": "enabled" if config.batarot_llm_thinking else "disabled"}}
+    if provider == "siliconflow":
+        return {"enable_thinking": config.batarot_llm_thinking}
+    return {}
+
+
+def _update_usage(record: Dict[str, Any], usage: Any) -> None:
+    if not isinstance(usage, dict):
+        return
+    for key in ("prompt_tokens", "completion_tokens", "total_tokens"):
+        value = usage.get(key)
+        record[key] = value if type(value) is int and value >= 0 else None
+    details = usage.get("completion_tokens_details")
+    value = details.get("reasoning_tokens") if isinstance(details, dict) else None
+    record["reasoning_tokens"] = value if type(value) is int and value >= 0 else None
+
+
+def _write_usage(record: Dict[str, Any]) -> None:
+    record = dict(record)
+    record.pop("requested", None)
+    record["estimated_cost_cny"] = None
+    inputs, outputs = record["prompt_tokens"], record["completion_tokens"]
+    input_price = config.batarot_llm_input_price_per_million
+    output_price = config.batarot_llm_output_price_per_million
+    if inputs is not None and outputs is not None and input_price is not None and output_price is not None:
+        record["estimated_cost_cny"] = round((inputs * input_price + outputs * output_price) / 1_000_000, 8)
+    logger.info("batarot_usage {}", json.dumps(record, ensure_ascii=False, separators=(",", ":")))
+
+
 async def chat_completion(
+    messages: List[Dict[str, str]], *, temperature: Optional[float] = None,
+    max_tokens: Optional[int] = None,
+) -> str:
+    global _active_requests
+    if _active_requests >= config.batarot_llm_max_concurrency:
+        raise LLMError("当前解读较多，请稍后再试")
+    _active_requests += 1
+    started = time.monotonic()
+    record = {"request_id": uuid4().hex, "model": config.batarot_llm_model,
+              "purpose": usage_context.get(), "state": "failed", "requested": False,
+              "http_status": None, "prompt_tokens": None, "completion_tokens": None,
+              "total_tokens": None, "reasoning_tokens": None}
+    try:
+        result = await _chat_completion_impl(messages, temperature=temperature, max_tokens=max_tokens, record=record)
+        record["state"] = "completed"
+        return result
+    except asyncio.CancelledError:
+        record["state"] = "cancelled"
+        raise
+    finally:
+        _active_requests -= 1
+        if record["requested"]:
+            record["elapsed_ms"] = round((time.monotonic() - started) * 1000, 2)
+            _write_usage(record)
+
+
+async def _chat_completion_impl(
     messages: List[Dict[str, str]],
     *,
     temperature: Optional[float] = None,
     max_tokens: Optional[int] = None,
+    record: Dict[str, Any],
 ) -> str:
     """调用 OpenAI 兼容接口并返回模型回复文本。
 
@@ -191,17 +282,15 @@ async def chat_completion(
         payload["max_tokens"] = int(tokens)
 
     url = _endpoint()
-    # 此扩展参数只发给 DeepSeek 官方接口，避免破坏其他兼容服务。
-    if urlsplit(url).hostname == "api.deepseek.com":
-        payload["thinking"] = {
-            "type": "enabled" if config.batarot_llm_thinking else "disabled"
-        }
+    payload.update(_thinking_options(url, model))
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
     }
 
+    record["requested"] = True
     status, raw = await _post_json(url, payload, headers)
+    record["http_status"] = status
 
     if status != 200:
         # 服务商报错可能回显密钥或用户问题，不向群聊或日志透传正文。
@@ -222,6 +311,7 @@ async def chat_completion(
 
     if not isinstance(data, dict):
         raise LLMError("接口返回格式不正确")
+    _update_usage(record, data.get("usage"))
     if data.get("error"):
         raise LLMError("模型服务返回错误，请管理员检查接口配置与账户状态")
     choices = data.get("choices") or []
@@ -266,7 +356,7 @@ def _name_with_en(card_name: str, card_en_name: str = "") -> str:
 
 
 def _question_line(question: str = "") -> str:
-    question = (question or "").strip()
+    question = (question or "").strip()[:config.batarot_llm_max_question_chars]
     if question:
         return f"老师提出的问题是：{question}"
     return "老师没有提出具体问题，请围绕抽到的牌给出整体解读。"
@@ -319,19 +409,21 @@ def build_fortune_prompt(
     *,
     card_name: str,
     card_en_name: str = "",
-    score: int,
-    description: str = "",
+    position: str,
+    meaning: str,
+    delta: int,
+    total: int,
     question: str = "",
 ) -> str:
-    """每日运势的解读提示词。"""
+    """固定每日幸运牌的解读提示词。"""
     return "\n".join(
         [
-            "我抽到了今日的塔罗运势牌，请你为我解读。",
-            f"今日塔罗牌：{_name_with_en(card_name, card_en_name)}",
-            f"本地运势指数：{score}/100",
-            f"本地运势描述：{description}",
+            "我抽到了今日的幸运牌，请结合牌面给出简洁的解读和建议。",
+            f"幸运牌：{_name_with_en(card_name, card_en_name)}（{position}）",
+            f"牌义：{meaning}",
+            f"今日幸运值变化：{delta:+d}；累计幸运值：{total}",
             _question_line(question),
-            "请围绕今天的状态与行动建议给出解读。",
+            "幸运值是小游戏积分，不能用于预测真实结果；请勿更改牌面、正逆位或分数。",
         ]
     )
 
