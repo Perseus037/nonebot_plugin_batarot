@@ -162,7 +162,7 @@ FORWARD_MODE=false
 - 当天再次发送 `ba运势`，先提示已经抽取，再展示当天的牌面、幸运变化、累计值与已保存解读。重复查询、更换问题和重启机器人都不会重新抽牌或请求 AI。
 - `ba塔罗牌`、`ba占卜`、`ba塔罗牌解读` 共用普通 AI 日额度；幸运牌首次解读独立于这 3 次额度。关闭 AI 时仍可使用所有基础抽牌功能。
 - 数据、日额度、冷却及同用户在途限制均按群和用户隔离，同一人在不同群独立使用。私聊独立保存；不同适配器和机器人账号也分别记录。
-- 真正开始尝试的普通 AI 请求即占用一次额度，接口失败也不返还；AI 关闭、配置不完整、冷却中、已有请求或全局并发已满时不扣额度。
+- 真正开始尝试的普通 AI 请求即占用一次额度；AI 关闭、配置不完整、冷却中、已有请求或全局并发已满时不扣额度。
 - 幸运牌只在首次抽取时尝试 AI。已有同用户请求或全局并发已满时，最多等待 `BATAROT_LLM_TIMEOUT + 2` 秒获取名额，获取后再按原请求超时调用模型；等待时不占并发或普通日额度。等待耗尽、调用失败、中断或未开启 AI 时，当天均不补请求，已抽牌和幸运值仍保留。
 
 状态文件保存每个群用户的累计值、最近一次幸运牌及 AI 解读、最近一天普通 AI 次数，不追加每日历史。首次 AI 请求前先保存牌面，再写回解读；同一进程内串行更新并原子替换文件。首次幸运牌会等待解读完成或失败后，一并发送牌面与解读。
@@ -191,7 +191,7 @@ FORWARD_MODE=false
 | `BATAROT_LLM_INPUT_PRICE_PER_MILLION` | float | 空 | 每百万输入 token 价格，可选非负数；用于日志估算费用 |
 | `BATAROT_LLM_OUTPUT_PRICE_PER_MILLION` | float | 空 | 每百万输出 token 价格，可选非负数；两项价格使用同一币种 |
 
-`THINKING_PROVIDER=auto` 对 DeepSeek 官方地址发送 `thinking.type`，对硅基流动已识别的 Qwen3、DeepSeek-V3.1/V3.2、GLM-4.5/4.6 系列发送 `enable_thinking`，排除 Instruct、Embedding、Reranker 名称。其他模型（如 Ling）不盲目添加思考参数。自建网关可在确认兼容后显式选 `deepseek` 或 `siliconflow`；选 `none` 完全不发送思考参数。模型支持情况以服务商为准，这个开关不保证任意模型都能关闭思考。
+`THINKING_PROVIDER=auto` 对 DeepSeek 官方地址发送 `thinking.type`，对硅基流动已识别的 Qwen3、DeepSeek-V3.1/V3.2、GLM-4.5/4.6 系列发送 `enable_thinking`，排除 Instruct、Embedding、Reranker 名称。其他模型（如 Ling）不盲目添加思考参数。自建网关可在确认兼容后显式选 `deepseek` 或 `siliconflow`；选 `none` 完全不发送思考参数。模型支持情况以服务商为准，这个开关不保证任意模型都能关闭思考。使用其它平台模型请务必自己核对参数。
 
 最小可用配置示例（复制到 bot 根目录的 `.env` 并重启）：
 
