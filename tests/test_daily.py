@@ -380,16 +380,18 @@ class DailyFortuneTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.user_state()["fortune"]["ai_status"], "failed")
         self.assertNotIn("ai_usage", self.user_state())
 
-    async def test_daily_prompt_contains_position_meaning_delta_and_total(self):
+    async def test_daily_prompt_contains_card_but_not_luck_values(self):
         with patch.object(handler, "build_fortune_prompt", wraps=llm.build_fortune_prompt) as prompt:
             await self.fortune(question="我该怎样开始")
         values = prompt.call_args.kwargs
-        self.assertEqual((values["position"], values["meaning"], values["delta"], values["total"]),
-                         ("正位", "勇于开始", 2, 12))
+        self.assertEqual((values["position"], values["meaning"]), ("正位", "勇于开始"))
+        self.assertNotIn("delta", values)
+        self.assertNotIn("total", values)
         self.assertEqual(values["question"], "我该怎样开始")
         content = self.generate.call_args.args[0]
-        self.assertIn("+2", content)
-        self.assertIn("累计幸运值：12", content)
+        self.assertNotIn("+2", content)
+        self.assertNotIn("12", content)
+        self.assertIn("不讨论或编造游戏积分、幸运值及排名", content)
         self.assertNotIn("/100", content)
 
     def test_lucky_delta_bounds_and_direction_signs(self):

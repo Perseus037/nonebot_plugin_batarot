@@ -19,8 +19,9 @@ __plugin_meta__ = PluginMetadata(
     name="碧蓝档案塔罗牌",
     description="碧蓝档案塔罗牌，运势预测与魔法占卜🔮支持多适配器，可接入大模型（LLM）辅助解读",
     usage=(
-        "使用命令：ba塔罗牌，ba占卜，ba运势，ba塔罗牌解读\n"
+        "使用命令：ba塔罗牌，ba占卜，ba运势，ba塔罗牌解读，幸运排行\n"
         "ba运势：每群每人每天一张幸运牌，重复查询展示当天结果\n"
+        "幸运排行：查看本群累计幸运值前十名\n"
         "其他占卜 AI 解读每群每人每天默认 3 次；可在命令后追加问题\n"
         "在 .env 中配置 BATAROT_LLM_ENABLED / BATAROT_LLM_API_BASE / BATAROT_LLM_API_KEY "
         "即可开启大模型辅助解读（详见插件 README 与 .env.example）"
