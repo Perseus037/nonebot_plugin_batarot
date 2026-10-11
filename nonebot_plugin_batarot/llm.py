@@ -411,8 +411,6 @@ def build_fortune_prompt(
     card_en_name: str = "",
     position: str,
     meaning: str,
-    delta: int,
-    total: int,
     question: str = "",
 ) -> str:
     """固定每日幸运牌的解读提示词。"""
@@ -421,9 +419,8 @@ def build_fortune_prompt(
             "我抽到了今日的幸运牌，请结合牌面给出简洁的解读和建议。",
             f"幸运牌：{_name_with_en(card_name, card_en_name)}（{position}）",
             f"牌义：{meaning}",
-            f"今日幸运值变化：{delta:+d}；累计幸运值：{total}",
             _question_line(question),
-            "幸运值是小游戏积分，不能用于预测真实结果；请勿更改牌面、正逆位或分数。",
+            "请只解读牌面、正逆位和牌义，不讨论或编造游戏积分、幸运值及排名。",
         ]
     )
 

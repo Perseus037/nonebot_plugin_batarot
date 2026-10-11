@@ -228,3 +228,26 @@ class StateStore:
             return copy.deepcopy(record)
 
         return await self._transaction(action)
+
+    async def leaderboard(self, scope_key: str, limit: int = 10) -> list[dict]:
+        _user_key(scope_key)
+        if not scope_key.endswith(":") or ":group:" not in scope_key:
+            raise StateError("Invalid group scope")
+        identity, group = scope_key[:-1].rsplit(":group:", 1)
+        if ":" not in identity or not all(identity.rsplit(":", 1)) or not group or ":" in group:
+            raise StateError("Invalid group scope")
+        if not _integer(limit, 1, 10):
+            raise StateError("Ranking limit must be between 1 and 10")
+
+        def action():
+            rows = []
+            for key, user in self._load()["users"].items():
+                if not key.startswith(scope_key) or "luck_total" not in user:
+                    continue
+                user_id = key[len(scope_key):]
+                if user_id and ":" not in user_id:
+                    rows.append({"user_id": user_id, "total": user["luck_total"]})
+            rows.sort(key=lambda row: (-row["total"], row["user_id"]))
+            return rows[:limit]
+
+        return await self._transaction(action)

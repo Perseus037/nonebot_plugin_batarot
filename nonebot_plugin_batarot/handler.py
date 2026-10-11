@@ -15,7 +15,7 @@ from nonebot.log import logger
 from nonebot.matcher import current_bot
 
 from .config import config
-from .commands import tarot, tarot_spread, tarot_fortune, tarot_reading
+from .commands import tarot, tarot_spread, tarot_fortune, tarot_reading, tarot_ranking
 from .state import StateError, StateStore
 from .llm import (
     LLMError,
@@ -47,7 +47,7 @@ def _today() -> str:
     return datetime.now(timezone(timedelta(hours=config.batarot_day_utc_offset))).date().isoformat()
 
 
-def _user_key(event: Event) -> str:
+def _scope_key(event: Event) -> str:
     try:
         bot = current_bot.get()
         platform = bot.adapter.get_name()
@@ -59,7 +59,11 @@ def _user_key(event: Event) -> str:
     if group is None:
         group = getattr(event, "channel_id", None)
     scope = f"group:{group}" if group is not None else "private"
-    return f"{platform}:{bot_id}:{scope}:{event.get_user_id()}"
+    return f"{platform}:{bot_id}:{scope}:"
+
+
+def _user_key(event: Event) -> str:
+    return _scope_key(event) + str(event.get_user_id())
 
 
 def _store() -> StateStore:
@@ -346,7 +350,7 @@ async def _daily_fortune(event, key, day, question):
     prompt = build_fortune_prompt(
         card_name=record["name"], card_en_name=record["en_name"],
         position=_position_text(record["position"]), meaning=record["meaning"],
-        delta=record["delta"], total=record["total"], question=question,
+        question=question,
     )
     try:
         result = await _request_ai_result(event, prompt, daily=True, day=day)
@@ -359,6 +363,44 @@ async def _daily_fortune(event, key, day, question):
     await store.complete_daily(key, day, text, result.status)
     record.update(ai_text=text, ai_status=result.status)
     return record, True
+
+
+@tarot_ranking.handle()
+async def handle_lucky_ranking(bot: Bot, event: Event):
+    group_id = getattr(event, "group_id", None)
+    if group_id is None:
+        await MessageFactory(Text("请在群聊中查看幸运排行。")).send()
+        await tarot_ranking.finish()
+    try:
+        rows = await _store().leaderboard(_scope_key(event))
+    except StateError:
+        logger.error("batarot: 幸运排行存档不可读，未修改原记录")
+        await MessageFactory(Text("幸运牌存档暂时不可用，请联系管理员。")).send()
+        await tarot_ranking.finish()
+    if not rows:
+        await MessageFactory(Text("本群还没有幸运牌记录，发送 ba运势 抽取第一张吧。")).send()
+        await tarot_ranking.finish()
+
+    names = {}
+    try:
+        members = await asyncio.wait_for(bot.get_group_member_list(group_id=int(group_id)), timeout=5)
+        if isinstance(members, list):
+            for member in members:
+                if not isinstance(member, dict):
+                    continue
+                name = next((value for value in (member.get("card"), member.get("nickname"))
+                             if isinstance(value, str) and value.strip()), "")
+                if name:
+                    names[str(member.get("user_id"))] = " ".join(name.split())[:30]
+    except Exception as error:
+        logger.debug("batarot: 排行榜群名片读取失败（{}），使用用户号", type(error).__name__)
+    lines = ["🍀 本群累计幸运排行（前10名）"]
+    for place, row in enumerate(rows, 1):
+        user_id = row["user_id"]
+        name = f"{names[user_id]}（{user_id}）" if user_id in names else user_id
+        lines.append(f"{place}. {name}：{row['total']}")
+    await MessageFactory(Text("\n".join(lines))).send(reply=True)
+    await tarot_ranking.finish()
 
 
 @tarot_reading.handle()
